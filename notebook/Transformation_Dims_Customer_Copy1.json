@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4e56eeb3-20b8-432c-b737-bcd7ba62cec3"
+				"spark.autotune.trackingId": "f76f7e12-22f5-401a-b237-07e02aa49c6b"
 			}
 		},
 		"metadata": {
@@ -60,95 +60,10 @@
 					}
 				},
 				"source": [
-					"from pyspark.sql.functions import avg, count,col,when,countDistinct,round, filter"
-				],
-				"execution_count": 4
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# #Query to find the average age of customers by state and country using pyspark dataframe\r\n",
-					"# customer_avg_age=df.groupBy(\"state\", \"country\").agg(avg(\"age\"))\r\n",
-					" "
-				],
-				"execution_count": 5
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# display(customer_avg_age.show())"
-				],
-				"execution_count": 6
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# #Query to find the number of customers with a premium status of \"true\" in each country, grouped by age range using pyspark dataframe:\r\n",
-					" \r\n",
-					" \r\n",
-					"# df.filter(\"prm_status = 'TRUE'\" ) \\\r\n",
-					"#   .withColumn(\"age_range\", when((col(\"age\") >= 18) & (col(\"age\") <= 25), \"Youngsters\")\r\n",
-					"#                            .when((col(\"age\") > 25) & (col(\"age\") <= 35), \"Working class\")\r\n",
-					"#                            .when((col(\"age\") > 35) & (col(\"age\") <= 45), \"Middle Age\")\r\n",
-					"#                            .otherwise(\"Senior citizens\")) \\\r\n",
-					"#   .groupBy(\"country\", \"age_range\") \\\r\n",
-					"#   .agg(count(\"*\")) \\\r\n",
-					"#   .show()\r\n",
-					" "
-				],
-				"execution_count": 7
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
 					"# Add required imports\r\n",
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
-					"from pyspark.sql.functions import col"
+					"from pyspark.sql.functions import avg, count,col,when,countDistinct,round, filter"
 				],
 				"execution_count": 9
 			},
@@ -631,6 +546,19 @@
 				"execution_count": 22
 			},
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Assigning point metrics"
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
@@ -843,6 +771,19 @@
 					"dfToReadFromTable.createOrReplaceTempView(\"customer_details\")"
 				],
 				"execution_count": 30
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Calculating Loan Scores"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -1156,43 +1097,6 @@
 				"metadata": {
 					"jupyter": {
 						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# from pyspark.sql.functions import when, col"
-				],
-				"execution_count": 34
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# import com.microsoft.spark.sqlanalytics\r\n",
-					"# from com.microsoft.spark.sqlanalytics.Constants import Constants"
-				],
-				"execution_count": 35
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
 						"outputs_hidden": true
 					},
 					"nteract": {
@@ -1213,40 +1117,6 @@
 					"#  .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
 				],
 				"execution_count": 36
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					""
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					""
-				]
 			}
 		]
 	}
