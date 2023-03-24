@@ -1,5 +1,5 @@
 {
-	"name": "Dataflow1",
+	"name": "DF_Loading",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -9,7 +9,7 @@
 						"referenceName": "DS_Staging_01",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "sourceADLSgen2"
 				}
 			],
 			"sinks": [
@@ -18,15 +18,20 @@
 						"referenceName": "DS_AzureSynapseAnalyticsTable",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sinkDWH"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "AddingDateColumn"
+				}
+			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> sourceADLSgen2",
+				"sourceADLSgen2 derive(timestamp = currentDate()) ~> AddingDateColumn",
+				"AddingDateColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -37,7 +42,8 @@
 				"     allowCopyCommand: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkDWH"
 			]
 		}
 	}

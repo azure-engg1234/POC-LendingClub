@@ -66,16 +66,16 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Dataflow1",
+									"referenceName": "DF_Loading",
 									"type": "DataFlowReference",
 									"datasetParameters": {
-										"source1": {
+										"sourceADLSgen2": {
 											"file_name": {
 												"value": "@item().name",
 												"type": "Expression"
 											}
 										},
-										"sink1": {
+										"sinkDWH": {
 											"table_name": {
 												"value": "@concat(substring(item().name,0,lastIndexOf(item().name,'.')))",
 												"type": "Expression"
