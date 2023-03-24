@@ -1781,6 +1781,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     recreate:true,",
 						"     format: 'table',",
 						"     staged: true,",
 						"     allowCopyCommand: true,",
@@ -1827,6 +1828,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT * FROM [gold].[customer_dim] ORDER BY customer_id DESC LIMIT 1\n\nSELECT TOP 1 * FROM [gold].[customer_dim] ORDER BY customer_id DESC\n\nselect count(*) from [gold].[customer_dim] ",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "LC_DWH",
+						"poolName": "LC_DWH"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/dateDimension')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -1861,6 +1882,26 @@
 						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/watermark_table')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "drop table bronze.watermark_table\n\ncreate table bronze.watermark_table\n(\n    id int,\n    tablename VARCHAR(50),\n    idtracker int,\n    LastModifytime date\n);\n\ninsert into bronze.watermark_table (id,tablename, idtracker,LastModifytime) \nVALUES (1,'customer_data', 130772,  '2023-03-23' )\ninsert into bronze.watermark_table (id,tablename, idtracker,LastModifytime) \nVALUES (2,'investor_data', 130772,  '2023-03-23' )\ninsert into bronze.watermark_table (id, tablename, idtracker,LastModifytime) \nVALUES (3,'loan_details', 130772,  '2023-03-23' )\n\nselect * from bronze.watermark_table",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "LC_DWH",
+						"poolName": "LC_DWH"
+					},
+					"resultLimit": -1
 				},
 				"type": "SqlQuery"
 			},
@@ -2329,6 +2370,10 @@
 			"properties": {
 				"nbformat": 4,
 				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "LCsparkpool",
+					"type": "BigDataPoolReference"
+				},
 				"sessionProperties": {
 					"driverMemory": "28g",
 					"driverCores": 4,
@@ -2340,7 +2385,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6713fa76-60a2-4bc7-b698-0fb3500c5974"
+						"spark.autotune.trackingId": "caaa3399-51ac-4c42-8ca6-984e4c21c587"
 					}
 				},
 				"metadata": {
@@ -2352,6 +2397,21 @@
 					},
 					"language_info": {
 						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/50822855-539b-48a3-afcf-322ffaf42318/resourceGroups/LendingClub_POC/providers/Microsoft.Synapse/workspaces/lendingclubwspace/bigDataPools/LCsparkpool",
+						"name": "LCsparkpool",
+						"type": "Spark",
+						"endpoint": "https://lendingclubwspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.3",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2370,7 +2430,298 @@
 							"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Read from existing internal table\r\n",
+							"df_customer_data = (spark.read\r\n",
+							"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@lendingclubadlsgen2.dfs.core.windows.net/temporary-staging\")\r\n",
+							"                     .synapsesql(\"LC_DWH.bronze.customer_data\")\r\n",
+							"                    )"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Transformation Process and Creation of Customer Dimensional table"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df_customer_data = df_customer_data.withColumnRenamed(\"mem_id\", \"member_id\").withColumnRenamed(\"fst_name\", \"first_name\")\\\r\n",
+							".withColumnRenamed(\"lst_name\", \"last_name\").withColumnRenamed(\"cust_id\",\"customer_id\")"
+						],
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# df_customer_data.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Casting the column to change the datatype\r\n",
+							"df_customer_data = df_customer_data.withColumn(\"age\",df_customer_data.age.cast('int'))"
+						],
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Dataset Analysis"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# customer_data = df_customer_data.toPandas()"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# customer_data.describe()"
+						],
+						"outputs": [],
+						"execution_count": 9
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# customer_data.isna().sum()"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# df_customer_data.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Writing the cleaned and transformed data to gold table"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": true
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"(df_customer_data.write\r\n",
+							" .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+							" .mode(\"overwrite\")\r\n",
+							" .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
+						],
+						"outputs": [],
+						"execution_count": 15
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Cleaning_Dims_Customer_Automated')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "LCsparkpool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "9b43d1d9-1247-4c10-a8f3-d131bc06f7cf"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/50822855-539b-48a3-afcf-322ffaf42318/resourceGroups/LendingClub_POC/providers/Microsoft.Synapse/workspaces/lendingclubwspace/bigDataPools/LCsparkpool",
+						"name": "LCsparkpool",
+						"type": "Spark",
+						"endpoint": "https://lendingclubwspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.3",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# Import the required dependencies\r\n",
+							"import com.microsoft.spark.sqlanalytics\r\n",
+							"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
+							"from pyspark.sql.types import DecimalType\r\n",
+							"from pyspark.sql.window import Window\r\n",
+							"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date"
+						],
+						"outputs": [],
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
