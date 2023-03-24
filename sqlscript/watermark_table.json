@@ -1,8 +1,8 @@
 {
-	"name": "SQL script 1",
+	"name": "watermark_table",
 	"properties": {
 		"content": {
-			"query": "drop table bronze.watermark_table\n\ncreate table bronze.watermark_table\n(\n    id int IDENTITY,\n    tablename VARCHAR(50),\n    idtracker int,\n    LastModifytime datetime\n);\n\ninsert into bronze.watermark_table VALUES(\n    \"customer_data\",  \n)",
+			"query": "drop table bronze.watermark_table\n\ncreate table bronze.watermark_table\n(\n    id int,\n    tablename VARCHAR(50),\n    idtracker int,\n    LastModifytime date\n);\n\ninsert into bronze.watermark_table (id,tablename, idtracker,LastModifytime) \nVALUES (1,'customer_data', 130772,  '2023-03-23' )\ninsert into bronze.watermark_table (id,tablename, idtracker,LastModifytime) \nVALUES (2,'investor_data', 130772,  '2023-03-23' )\ninsert into bronze.watermark_table (id, tablename, idtracker,LastModifytime) \nVALUES (3,'loan_details', 130772,  '2023-03-23' )\n\nselect * from bronze.watermark_table",
 			"metadata": {
 				"language": "sql"
 			},
@@ -10,7 +10,7 @@
 				"databaseName": "LC_DWH",
 				"poolName": "LC_DWH"
 			},
-			"resultLimit": 5000
+			"resultLimit": -1
 		},
 		"type": "SqlQuery"
 	}

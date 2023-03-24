@@ -1,5 +1,5 @@
 {
-	"name": "Cleaning_Dims_Customer",
+	"name": "Cleaning_Dims_Customer_Automated",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1e94e5e8-faec-49b1-9ebd-cfe5a690f3ec"
+				"spark.autotune.trackingId": "9b43d1d9-1247-4c10-a8f3-d131bc06f7cf"
 			}
 		},
 		"metadata": {
