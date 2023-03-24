@@ -2385,7 +2385,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "caaa3399-51ac-4c42-8ca6-984e4c21c587"
+						"spark.autotune.trackingId": "1e94e5e8-faec-49b1-9ebd-cfe5a690f3ec"
 					}
 				},
 				"metadata": {
@@ -2410,8 +2410,7 @@
 						"sparkVersion": "3.3",
 						"nodeCount": 3,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2677,7 +2676,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "9b43d1d9-1247-4c10-a8f3-d131bc06f7cf"
+						"spark.autotune.trackingId": "c04300c6-9db9-4d8e-b190-40a5b02f9c5b"
 					}
 				},
 				"metadata": {
@@ -2702,7 +2701,8 @@
 						"sparkVersion": "3.3",
 						"nodeCount": 3,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2721,7 +2721,7 @@
 							"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 9
 					},
 					{
 						"cell_type": "code",
@@ -2744,7 +2744,140 @@
 							"                    )"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df_customer_data.createTempView(\"customer_data\")"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df_watermark_table = (spark.read\r\n",
+							"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@lendingclubadlsgen2.dfs.core.windows.net/temporary-staging\")\r\n",
+							"                     .synapsesql(\"LC_DWH.bronze.watermark_table\")\r\n",
+							"                    )"
+						],
+						"outputs": [],
+						"execution_count": 12
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df_watermark_table.createTempView(\"watermark_table\")"
+						],
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							}
+						},
+						"source": [
+							"%%sql select * from customer_data"
+						],
+						"outputs": [],
+						"execution_count": 18
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
 					},
 					{
 						"cell_type": "markdown",
@@ -6766,7 +6899,7 @@
 			"properties": {
 				"autoPause": {
 					"enabled": true,
-					"delayInMinutes": 10
+					"delayInMinutes": 15
 				},
 				"autoScale": {
 					"enabled": false,
