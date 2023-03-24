@@ -308,7 +308,8 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Get Metadata1",
+						"name": "GetStagingAreaInformation",
+						"description": "Fetch the metadata of the staging area containing the files extracted from the on premise file system",
 						"type": "GetMetadata",
 						"dependsOn": [],
 						"policy": {
@@ -339,11 +340,11 @@
 						}
 					},
 					{
-						"name": "ForEach1",
+						"name": "FIleIterator",
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "Get Metadata1",
+								"activity": "GetStagingAreaInformation",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -352,12 +353,13 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('Get Metadata1').output.childItems",
+								"value": "@activity('GetStagingAreaInformation').output.childItems",
 								"type": "Expression"
 							},
 							"activities": [
 								{
-									"name": "Data flow1",
+									"name": "DataLoading",
+									"description": "Load each file into the Azure Data Warehouse (Synapse)",
 									"type": "ExecuteDataFlow",
 									"dependsOn": [],
 									"policy": {
@@ -386,16 +388,6 @@
 														"type": "Expression"
 													}
 												}
-											},
-											"linkedServiceParameters": {
-												"source1": {
-													"schemaLinkedService": {
-														"file_name": {
-															"value": "@item().name",
-															"type": "Expression"
-														}
-													}
-												}
 											}
 										},
 										"staging": {
@@ -414,6 +406,178 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "PLFailureLogger",
+						"description": "Logging the pipeline on a failed run",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "FIleIterator",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[ELT_LC].[usp_logger_failure]",
+							"storedProcedureParameters": {
+								"pipeline_name": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"run_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_by_pipeline_id": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineRunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_by_pipeline_name": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_id": {
+									"value": {
+										"value": "@pipeline().TriggerId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_name": {
+									"value": {
+										"value": "@pipeline().TriggerName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_type": {
+									"value": {
+										"value": "@pipeline().TriggerType",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"workspace_name": {
+									"value": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_AzureSqlDB",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "PLSuccessLogger",
+						"description": "Logging the pipeline on a successful run",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "FIleIterator",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[ELT_LC].[usp_logger_success]",
+							"storedProcedureParameters": {
+								"pipeline_name": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"run_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_by_pipeline_id": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineRunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_by_pipeline_name": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_id": {
+									"value": {
+										"value": "@pipeline().TriggerId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_name": {
+									"value": {
+										"value": "@pipeline().TriggerName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_type": {
+									"value": {
+										"value": "@pipeline().TriggerType",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"workspace_name": {
+									"value": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_AzureSqlDB",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"policy": {
@@ -425,6 +589,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/DS_Staging_00')]",
+				"[concat(variables('workspaceId'), '/linkedServices/LS_AzureSqlDB')]",
 				"[concat(variables('workspaceId'), '/dataflows/Dataflow1')]",
 				"[concat(variables('workspaceId'), '/linkedServices/lendingclubwspace-WorkspaceDefaultStorage')]"
 			]
@@ -582,6 +747,7 @@
 				"activities": [
 					{
 						"name": "GetFileSystemInformation",
+						"description": "Getting information/metadata from the local filesystem hosting the required files.",
 						"type": "GetMetadata",
 						"dependsOn": [],
 						"policy": {
@@ -599,7 +765,6 @@
 								"parameters": {}
 							},
 							"fieldList": [
-								"childItems",
 								"itemName",
 								"itemType"
 							],
@@ -699,7 +864,8 @@
 						}
 					},
 					{
-						"name": "LC_Logger_onSuccess",
+						"name": "PLSuccessLogger",
+						"description": "Logging the pipeline on a successful run",
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
@@ -718,22 +884,8 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[ELT_LC].[usp_logger]",
+							"storedProcedureName": "[ELT_LC].[usp_logger_success]",
 							"storedProcedureParameters": {
-								"errors": {
-									"value": {
-										"value": "@activity('LoadDatatoStagingArea').output.errors",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"execution_date": {
-									"value": {
-										"value": "@pipeline().TriggerTime",
-										"type": "Expression"
-									},
-									"type": "DateTime"
-								},
 								"pipeline_name": {
 									"value": {
 										"value": "@pipeline().Pipeline",
@@ -741,40 +893,140 @@
 									},
 									"type": "String"
 								},
-								"rows_copied": {
+								"run_id": {
 									"value": {
-										"value": "@activity('LoadDatatoStagingArea').output.rowsCopied",
-										"type": "Expression"
-									},
-									"type": "Int32"
-								},
-								"rows_read": {
-									"value": {
-										"value": "@activity('LoadDatatoStagingArea').output.rowsRead",
-										"type": "Expression"
-									},
-									"type": "Int32"
-								},
-								"source": {
-									"value": {
-										"value": "@activity('LoadDatatoStagingArea').output.executionDetails[0].source.type",
+										"value": "@pipeline().RunId",
 										"type": "Expression"
 									},
 									"type": "String"
 								},
-								"target": {
+								"trigger_by_pipeline_id": {
 									"value": {
-										"value": "@activity('LoadDatatoStagingArea').output.executionDetails[0].sink.type",
+										"value": "@pipeline()?.TriggeredByPipelineRunId",
 										"type": "Expression"
 									},
 									"type": "String"
 								},
-								"throughput": {
+								"trigger_by_pipeline_name": {
 									"value": {
-										"value": "@activity('LoadDatatoStagingArea').output.throughput",
+										"value": "@pipeline()?.TriggeredByPipelineName",
 										"type": "Expression"
 									},
-									"type": "Decimal"
+									"type": "String"
+								},
+								"trigger_id": {
+									"value": {
+										"value": "@pipeline().TriggerId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_name": {
+									"value": {
+										"value": "@pipeline().TriggerName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_type": {
+									"value": {
+										"value": "@pipeline().TriggerType",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"workspace_name": {
+									"value": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_AzureSqlDB",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "PLFailureLogger",
+						"description": "Logging the pipeline on a failed run",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "DataLoading",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[ELT_LC].[usp_logger_failure]",
+							"storedProcedureParameters": {
+								"pipeline_name": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"run_id": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_by_pipeline_id": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineRunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_by_pipeline_name": {
+									"value": {
+										"value": "@pipeline()?.TriggeredByPipelineName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_id": {
+									"value": {
+										"value": "@pipeline().TriggerId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_name": {
+									"value": {
+										"value": "@pipeline().TriggerName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trigger_type": {
+									"value": {
+										"value": "@pipeline().TriggerType",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"workspace_name": {
+									"value": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"type": "String"
 								}
 							}
 						},
@@ -804,7 +1056,8 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "NB_Customer_Dimension",
+						"name": "NBCustomerDimension",
+						"description": "Execution of Notebook containing cleaning and transforming activity for customer dim table",
 						"type": "SynapseNotebook",
 						"dependsOn": [],
 						"policy": {
@@ -832,11 +1085,12 @@
 						}
 					},
 					{
-						"name": "NB_Investor_Dimension",
+						"name": "NBInvestorDimension",
+						"description": "Execution of Notebook containing cleaning and transforming activity for investor dim table",
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
-								"activity": "NB_Customer_Dimension",
+								"activity": "NBCustomerDimension",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -871,11 +1125,12 @@
 						}
 					},
 					{
-						"name": "NB_Loan_Details_Dimension",
+						"name": "NBLoanDetailsDimension",
+						"description": "Execution of Notebook containing cleaning and transforming activity for loan details dim table",
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
-								"activity": "NB_Investor_Dimension",
+								"activity": "NBInvestorDimension",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -906,11 +1161,12 @@
 						}
 					},
 					{
-						"name": "NB_Account_Details_Dimension",
+						"name": "NBAccountDetailsDimension",
+						"description": "Execution of Notebook containing cleaning and transforming activity for account details dim table",
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
-								"activity": "NB_Loan_Details_Dimension",
+								"activity": "NBLoanDetailsDimension",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -945,11 +1201,12 @@
 						}
 					},
 					{
-						"name": "NB_Payment_Dimension",
+						"name": "NBPaymentDimension",
+						"description": "Execution of Notebook containing cleaning and transforming activity for payment details dim table",
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
-								"activity": "NB_Account_Details_Dimension",
+								"activity": "NBAccountDetailsDimension",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -984,11 +1241,12 @@
 						}
 					},
 					{
-						"name": "NB_Defaulters_Dimension",
+						"name": "NBDefaultersDimension",
+						"description": "Execution of Notebook containing cleaning and transforming activity for defaulters dim table",
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
-								"activity": "NB_Payment_Dimension",
+								"activity": "NBPaymentDimension",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1023,11 +1281,12 @@
 						}
 					},
 					{
-						"name": "NB_Fact_Table",
+						"name": "NBFactTable",
+						"description": "Execution of Notebook containing cleaning and transforming activity for fact table",
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
-								"activity": "NB_Defaulters_Dimension",
+								"activity": "NBDefaultersDimension",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3977,7 +4236,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "643ceb07-4f6c-461f-b0f2-1f5efe62e0db"
+						"spark.autotune.trackingId": "3cf803b4-bb33-44d5-8d0b-f9dc9fb9bf44"
 					}
 				},
 				"metadata": {
