@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "drop table bronze.watermark_table\n\ncreate table bronze.watermark_table\n(\n    id int IDENTITY,\n    tablename VARCHAR(50),\n    idtracker int,\n    LastModifytime datetime\n);\n\ninsert into bronze.watermark_table VALUES(\n    \"customer_data\",  \n)",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "LC_DWH",
+				"poolName": "LC_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

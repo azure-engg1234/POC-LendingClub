@@ -3,6 +3,10 @@
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "LCsparkpool",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -14,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6713fa76-60a2-4bc7-b698-0fb3500c5974"
+				"spark.autotune.trackingId": "3c87dfc6-5fa9-4e91-b6e2-b1792aec2301"
 			}
 		},
 		"metadata": {
@@ -26,6 +30,21 @@
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/50822855-539b-48a3-afcf-322ffaf42318/resourceGroups/LendingClub_POC/providers/Microsoft.Synapse/workspaces/lendingclubwspace/bigDataPools/LCsparkpool",
+				"name": "LCsparkpool",
+				"type": "Spark",
+				"endpoint": "https://lendingclubwspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
