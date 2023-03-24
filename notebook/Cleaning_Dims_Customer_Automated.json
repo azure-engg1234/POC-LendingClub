@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c33464a4-95a8-4405-bbc4-083061b44c15"
+				"spark.autotune.trackingId": "66a4f851-947b-48a6-af01-216b08ba0481"
 			}
 		},
 		"metadata": {
@@ -62,7 +62,7 @@
 					"from pyspark.sql.window import Window\r\n",
 					"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date"
 				],
-				"execution_count": 9
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -84,7 +84,7 @@
 					"                     .synapsesql(\"LC_DWH.bronze.customer_data\")\r\n",
 					"                    )"
 				],
-				"execution_count": 10
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -102,7 +102,7 @@
 				"source": [
 					"df_customer_data.createTempView(\"customer_data\")"
 				],
-				"execution_count": 11
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -123,11 +123,64 @@
 					"                     .synapsesql(\"LC_DWH.bronze.watermark_table\")\r\n",
 					"                    )"
 				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql \r\n",
+					"\r\n",
+					"select * from watermark_table "
+				],
 				"execution_count": 12
 			},
 			{
-				"cell_type": "markdown",
+				"cell_type": "code",
 				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql \r\n",
+					"\r\n",
+					"select * from customer_data limit 10  \r\n",
+					"    "
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
 					"nteract": {
 						"transient": {
 							"deleting": false
@@ -135,8 +188,32 @@
 					}
 				},
 				"source": [
-					""
-				]
+					"customer_screened = spark.sql(\"SELECT * FROM customer_data where timestamp > (select lastModifytime from watermark_table where tablename = 'customer_data')\")"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql \r\n",
+					"\r\n",
+					"select top (100) from customer_data "
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -154,7 +231,7 @@
 				"source": [
 					"df_watermark_table.createTempView(\"watermark_table\")"
 				],
-				"execution_count": 13
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
