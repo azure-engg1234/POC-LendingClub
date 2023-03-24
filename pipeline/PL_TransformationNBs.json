@@ -3,7 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "NB_Customer_Dimension",
+				"name": "NBCustomerDimension",
+				"description": "Execution of Notebook containing cleaning and transforming activity for customer dim table",
 				"type": "SynapseNotebook",
 				"dependsOn": [],
 				"policy": {
@@ -31,11 +32,12 @@
 				}
 			},
 			{
-				"name": "NB_Investor_Dimension",
+				"name": "NBInvestorDimension",
+				"description": "Execution of Notebook containing cleaning and transforming activity for investor dim table",
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
-						"activity": "NB_Customer_Dimension",
+						"activity": "NBCustomerDimension",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -70,11 +72,12 @@
 				}
 			},
 			{
-				"name": "NB_Loan_Details_Dimension",
+				"name": "NBLoanDetailsDimension",
+				"description": "Execution of Notebook containing cleaning and transforming activity for loan details dim table",
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
-						"activity": "NB_Investor_Dimension",
+						"activity": "NBInvestorDimension",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -105,11 +108,12 @@
 				}
 			},
 			{
-				"name": "NB_Account_Details_Dimension",
+				"name": "NBAccountDetailsDimension",
+				"description": "Execution of Notebook containing cleaning and transforming activity for account details dim table",
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
-						"activity": "NB_Loan_Details_Dimension",
+						"activity": "NBLoanDetailsDimension",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -144,11 +148,12 @@
 				}
 			},
 			{
-				"name": "NB_Payment_Dimension",
+				"name": "NBPaymentDimension",
+				"description": "Execution of Notebook containing cleaning and transforming activity for payment details dim table",
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
-						"activity": "NB_Account_Details_Dimension",
+						"activity": "NBAccountDetailsDimension",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -183,11 +188,12 @@
 				}
 			},
 			{
-				"name": "NB_Defaulters_Dimension",
+				"name": "NBDefaultersDimension",
+				"description": "Execution of Notebook containing cleaning and transforming activity for defaulters dim table",
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
-						"activity": "NB_Payment_Dimension",
+						"activity": "NBPaymentDimension",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -222,11 +228,12 @@
 				}
 			},
 			{
-				"name": "NB_Fact_Table",
+				"name": "NBFactTable",
+				"description": "Execution of Notebook containing cleaning and transforming activity for fact table",
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
-						"activity": "NB_Defaulters_Dimension",
+						"activity": "NBDefaultersDimension",
 						"dependencyConditions": [
 							"Succeeded"
 						]
