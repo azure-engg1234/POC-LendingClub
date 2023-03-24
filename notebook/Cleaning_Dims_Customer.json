@@ -14,7 +14,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5f5f721c-6de3-4a38-8720-77f638a09140"
+				"spark.autotune.trackingId": "6713fa76-60a2-4bc7-b698-0fb3500c5974"
 			}
 		},
 		"metadata": {
@@ -36,6 +36,7 @@
 					"collapsed": false
 				},
 				"source": [
+					"# Import the required dependencies\r\n",
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.types import DecimalType\r\n",
@@ -90,25 +91,6 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"# display(df_customer_data.limit(10))"
-				],
-				"execution_count": 14
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					}
 				},
 				"source": [
@@ -149,6 +131,7 @@
 					}
 				},
 				"source": [
+					"# Casting the column to change the datatype\r\n",
 					"df_customer_data = df_customer_data.withColumn(\"age\",df_customer_data.age.cast('int'))"
 				],
 				"execution_count": 7
@@ -237,6 +220,19 @@
 					"# df_customer_data.printSchema()"
 				],
 				"execution_count": 11
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Writing the cleaned and transformed data to gold table"
+				]
 			},
 			{
 				"cell_type": "code",

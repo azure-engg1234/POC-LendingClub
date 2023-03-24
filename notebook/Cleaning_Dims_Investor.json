@@ -14,7 +14,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e840182d-8cbf-4aab-9c85-a916cc97ca28"
+				"spark.autotune.trackingId": "530337e8-5c24-4745-99b4-8a843bebd5b0"
 			}
 		},
 		"metadata": {
@@ -36,6 +36,7 @@
 					"collapsed": false
 				},
 				"source": [
+					"# Import the required dependencies\r\n",
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.types import DecimalType\r\n",
@@ -172,24 +173,7 @@
 					}
 				},
 				"source": [
-					"# df_investor_data.printSchema()"
-				],
-				"execution_count": 8
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
+					"# Casting the column to change the dataype\r\n",
 					"df_investor_data = df_investor_data.withColumn(\"age\",df_investor_data.age.cast('int'))"
 				],
 				"execution_count": 10
@@ -208,6 +192,7 @@
 					}
 				},
 				"source": [
+					"# Casting the column to change the dataype\r\n",
 					"df_investor_data = df_investor_data.withColumn(\"loan_funded_amount\",df_investor_data.loan_funded_amount.cast('int'))"
 				],
 				"execution_count": 11
@@ -296,6 +281,19 @@
 					"# df_investor.printSchema()"
 				],
 				"execution_count": 24
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Writing the cleaned and transformed data to gold table"
+				]
 			},
 			{
 				"cell_type": "code",

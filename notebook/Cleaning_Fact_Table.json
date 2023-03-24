@@ -14,7 +14,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "eb36e6d4-5292-406d-83c5-43bcf5d85a2a"
+				"spark.autotune.trackingId": "3cf803b4-bb33-44d5-8d0b-f9dc9fb9bf44"
 			}
 		},
 		"metadata": {
@@ -39,6 +39,7 @@
 					"collapsed": false
 				},
 				"source": [
+					"# Import the required dependencies\r\n",
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.types import DecimalType\r\n",
@@ -120,27 +121,9 @@
 					}
 				},
 				"source": [
-					"# %%pyspark\r\n",
 					"# (df_loan_details.columns)"
 				],
 				"execution_count": 4
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_loan_details.printSchema()"
-				]
 			},
 			{
 				"cell_type": "code",
@@ -206,6 +189,7 @@
 					}
 				},
 				"source": [
+					"# Adding the loan_id column\r\n",
 					"df_fact = df_fact.withColumn(\"loan_id\",row_number() \\\r\n",
 					".over( Window.orderBy(\"id\")))"
 				],
@@ -225,6 +209,7 @@
 					}
 				},
 				"source": [
+					"# Adding the investor_id column\r\n",
 					"df_fact = df_fact.withColumn(\"investor_id\",row_number() \\\r\n",
 					".over( Window.orderBy(\"id\")))"
 				],
@@ -244,6 +229,7 @@
 					}
 				},
 				"source": [
+					"# Adding the account_id column\r\n",
 					"df_fact = df_fact.withColumn(\"account_id\",row_number() \\\r\n",
 					".over( Window.orderBy(\"id\")))"
 				],
@@ -263,25 +249,7 @@
 					}
 				},
 				"source": [
-					"df_fact = df_fact.withColumn(\"account_id\",row_number() \\\r\n",
-					".over( Window.orderBy(\"id\")))"
-				],
-				"execution_count": 9
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
+					"# Adding the transaction_id column\r\n",
 					"df_fact = df_fact.withColumn(\"transaction_id\",row_number() \\\r\n",
 					".over( Window.orderBy(\"id\")))"
 				],
@@ -301,6 +269,7 @@
 					}
 				},
 				"source": [
+					"# Adding the defaulter_id column\r\n",
 					"df_fact = df_fact.withColumn(\"defaulter_id\",row_number() \\\r\n",
 					".over( Window.orderBy(\"id\")))"
 				],
@@ -379,6 +348,19 @@
 					"# display(df_fact.limit(5))"
 				],
 				"execution_count": 16
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Using withColumns in pyspark to concat string to ID columns "
+				]
 			},
 			{
 				"cell_type": "code",
@@ -499,25 +481,6 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"# display(df_fact.limit(5))"
-				],
-				"execution_count": 23
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					}
 				},
 				"source": [
@@ -543,24 +506,6 @@
 					"# display(df_fact_final.limit(5))"
 				],
 				"execution_count": 34
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_fact_final.printSchema()"
-				],
-				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -682,6 +627,19 @@
 					"# df_fact_final_pd.nunique()"
 				],
 				"execution_count": 41
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Writing the cleaned and transformed data to gold table"
+				]
 			},
 			{
 				"cell_type": "code",
