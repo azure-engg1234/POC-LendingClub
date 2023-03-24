@@ -1,0 +1,17 @@
+{
+	"name": "truncateTableCommands",
+	"properties": {
+		"content": {
+			"query": "TRUNCATE TABLE [gold].[Account_Details_Dim]\nTRUNCATE TABLE [gold].[customer_dim]\nTRUNCATE TABLE gold.Fact_table\nTRUNCATE TABLE gold.investor_dim\nTRUNCATE TABLE gold.Loan_Defaulter_Dim\nTRUNCATE TABLE gold.Loan_Details_Dim\nTRUNCATE TABLE gold.Payment_Details_Dim",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

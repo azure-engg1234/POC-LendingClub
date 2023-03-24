@@ -1,0 +1,33 @@
+{
+	"name": "DS_Loading",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Loading",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema_name": {
+				"type": "string",
+				"defaultValue": "bronze"
+			},
+			"table_name": {
+				"type": "string",
+				"defaultValue": "loan"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schema_name",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().table_name",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

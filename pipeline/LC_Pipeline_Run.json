@@ -1,0 +1,66 @@
+{
+	"name": "LC_Pipeline_Run",
+	"properties": {
+		"activities": [
+			{
+				"name": "OnPremiseDataExtraction",
+				"description": "Extraction of data from an on premise server to azure data lake storage gen 2",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_OnPremDataExtraction",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "LoadingDataLakeDatatoDWH",
+				"description": "Loading of data from ADLS gen2 to Azure Synapse DWH",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "OnPremiseDataExtraction",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_LoadingToDWH",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "CleaningTransformationAndLoading",
+				"description": "Cleaning and transformation on Bronze data and loading into Gold Schema",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "LoadingDataLakeDatatoDWH",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_TransformationNBs",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-03-24T05:51:00Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

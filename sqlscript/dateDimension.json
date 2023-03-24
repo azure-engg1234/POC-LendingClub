@@ -1,0 +1,17 @@
+{
+	"name": "dateDimension",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE gold.date_dim \n( date_key INT NOT NULL, \ndate DATE NOT NULL, \nweekday VARCHAR(9) NOT NULL, \nweekday_num INT NOT NULL, \nday_month INT NOT NULL, \nday_of_year INT NOT NULL, \nweek_of_year INT NOT NULL, \niso_week CHAR(10) NOT NULL, \nmonth_num INT NOT NULL, \nmonth_name VARCHAR(9) NOT NULL, \nmonth_name_short CHAR(3) NOT NULL, \nquarter INT NOT NULL, \nyear INT NOT NULL, \nfirst_day_of_month DATE NOT NULL, \nlast_day_of_month DATE NOT NULL,\n yyyymm CHAR(7) NOT NULL, \n weekend_indr CHAR(10) NOT NULL );\n\nselect count(*) from gold.date_dim\ntruncate table gold.date_dim\n\nINSERT INTO gold.date_dim\nSELECT CAST(CONVERT(VARCHAR(8), datum, 112) AS INT) AS date_key,\n    datum AS date,\n    DATENAME(WEEKDAY, datum) AS weekday,\n    DATEPART(WEEKDAY, datum) AS weekday_num,\n    DATEPART(DAY, datum) AS day_month,\n    DATEPART(DAYOFYEAR, datum) AS day_of_year,\n    DATEPART(WEEK, datum) AS week_of_year,\n    CAST(DATEPART(ISO_WEEK, datum) AS VARCHAR(4)) + '-W' + CAST(DATEPART(WEEKDAY, datum) AS VARCHAR(1)) AS iso_week,\n    DATEPART(MONTH, datum) AS month_num,\n    DATENAME(MONTH, datum) AS month_name,\n    LEFT(DATENAME(MONTH, datum), 3) AS month_name_short,\n    DATEPART(QUARTER, datum) AS quarter,\n    DATEPART(YEAR, datum) AS year,\n    DATEADD(MONTH, DATEDIFF(MONTH, 0, datum), 0) AS first_day_of_month,\n    EOMONTH(datum) AS last_day_of_month,\n    CONCAT(YEAR(datum), '-', FORMAT(datum, 'MM')) AS yyyymm,\n    CASE\n        WHEN DATEPART(WEEKDAY, datum) IN (6, 7) THEN 'weekend'\n        ELSE 'weekday'\n    END AS weekend_indr\nFROM (SELECT DATEADD(DAY, SEQUENCE.DAY, '2017-01-01') AS datum\n    FROM (SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1 AS DAY FROM sys.objects) AS SEQUENCE\n    GROUP BY SEQUENCE.DAY) DQ\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

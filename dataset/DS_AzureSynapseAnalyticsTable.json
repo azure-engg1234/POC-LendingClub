@@ -1,0 +1,28 @@
+{
+	"name": "DS_AzureSynapseAnalyticsTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lendingclubwspace-WorkspaceDefaultSqlServer",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": "LC_DWH"
+			}
+		},
+		"parameters": {
+			"table_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": {
+				"value": "@dataset().table_name",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

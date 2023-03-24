@@ -1,0 +1,268 @@
+{
+	"name": "PL_TransformationNBs",
+	"properties": {
+		"activities": [
+			{
+				"name": "NB_Customer_Dimension",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Cleaning_Dims_Customer",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": false,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 2
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			},
+			{
+				"name": "NB_Investor_Dimension",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "NB_Customer_Dimension",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Cleaning_Dims_Investor",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "LCsparkpool",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": false,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 2
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			},
+			{
+				"name": "NB_Loan_Details_Dimension",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "NB_Investor_Dimension",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Cleaning_Dims_Loan_Details",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": false,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 2
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			},
+			{
+				"name": "NB_Account_Details_Dimension",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "NB_Loan_Details_Dimension",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Cleaning_Dims_Account_Details",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "LCsparkpool",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": false,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 2
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			},
+			{
+				"name": "NB_Payment_Dimension",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "NB_Account_Details_Dimension",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Cleaning_Dims_Payment_Details",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "LCsparkpool",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": false,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 2
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			},
+			{
+				"name": "NB_Defaulters_Dimension",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "NB_Payment_Dimension",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Cleaning_Dims_Loan_Defaulter_Details",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "LCsparkpool",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": false,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 2
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			},
+			{
+				"name": "NB_Fact_Table",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "NB_Defaulters_Dimension",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Cleaning_Fact_Table",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "LCsparkpool",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
+					"conf": {
+						"spark.dynamicAllocation.enabled": false,
+						"spark.dynamicAllocation.minExecutors": 2,
+						"spark.dynamicAllocation.maxExecutors": 2
+					},
+					"driverSize": "Small",
+					"numExecutors": 2
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-03-23T05:29:44Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}
