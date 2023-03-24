@@ -372,17 +372,17 @@
 									"userProperties": [],
 									"typeProperties": {
 										"dataflow": {
-											"referenceName": "Dataflow1",
+											"referenceName": "DF_Loading",
 											"type": "DataFlowReference",
 											"parameters": {},
 											"datasetParameters": {
-												"source1": {
+												"sourceADLSgen2": {
 													"file_name": {
 														"value": "@item().name",
 														"type": "Expression"
 													}
 												},
-												"sink1": {
+												"sinkDWH": {
 													"table_name": {
 														"value": "@concat(substring(item().name,0,lastIndexOf(item().name,'.')))",
 														"type": "Expression"
@@ -590,7 +590,7 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/DS_Staging_00')]",
 				"[concat(variables('workspaceId'), '/linkedServices/LS_AzureSqlDB')]",
-				"[concat(variables('workspaceId'), '/dataflows/Dataflow1')]",
+				"[concat(variables('workspaceId'), '/dataflows/DF_Loading')]",
 				"[concat(variables('workspaceId'), '/linkedServices/lendingclubwspace-WorkspaceDefaultStorage')]"
 			]
 		},
@@ -1741,7 +1741,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Dataflow1')]",
+			"name": "[concat(parameters('workspaceName'), '/DF_Loading')]",
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -1753,7 +1753,7 @@
 								"referenceName": "DS_Staging_01",
 								"type": "DatasetReference"
 							},
-							"name": "source1"
+							"name": "sourceADLSgen2"
 						}
 					],
 					"sinks": [
@@ -1762,15 +1762,20 @@
 								"referenceName": "DS_AzureSynapseAnalyticsTable",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sinkDWH"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "AddingDateColumn"
+						}
+					],
 					"scriptLines": [
 						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
+						"     ignoreNoFilesFound: false) ~> sourceADLSgen2",
+						"sourceADLSgen2 derive(timestamp = currentDate()) ~> AddingDateColumn",
+						"AddingDateColumn sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -1781,7 +1786,8 @@
 						"     allowCopyCommand: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sinkDWH"
 					]
 				}
 			},
