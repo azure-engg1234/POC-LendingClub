@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "lendingclubwspace"
+		},
+		"LS_AzureSqlDB_connectionString": {
+			"value": ""
+		},
+		"LS_Loading_connectionString": {
+			"value": ""
+		},
+		"LS_Staging_01_accountKey": {
+			"value": ""
+		},
+		"OnPremise_FS_password": {
+			"value": ""
+		},
+		"lendingclubwspace-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:lendingclubwspace.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"LS_Staging_01_properties_typeProperties_url": {
+			"value": "https://lendingclubadlsgen2.dfs.core.windows.net/"
+		},
+		"OnPremise_FS_properties_typeProperties_host": {
+			"value": "\\\\localhost\\C$\\AzureFileSystem"
+		},
+		"OnPremise_FS_properties_typeProperties_userId": {
+			"value": "Zeeshan Sarwar"
+		},
+		"lendingclubwspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://lendingclubadlsgen2.dfs.core.windows.net"
+		}
+	}
+}
