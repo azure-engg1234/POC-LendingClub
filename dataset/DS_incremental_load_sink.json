@@ -1,0 +1,27 @@
+{
+	"name": "DS_incremental_load_sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Loading",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"STGdestfile": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "bronze",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().STGdestfile",
+				"type": "Expression"
+			}
+		}
+	}
+}

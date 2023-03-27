@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from elt_lc.cfg \nwhere enabled = 1",
+						"sqlReaderQuery": "select * from [delta_load].[lc_cfg]\nwhere enabled = 1",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -26,6 +26,204 @@
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LookupEltConfigTable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupEltConfigTable').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@bool(equals(item().Load_Flag,'Incremental'))",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Wait1",
+										"type": "Wait",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 1
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "get max last update date from cfg",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureSqlSource",
+												"sqlReaderQuery": {
+													"value": "select Watermark_Value from [delta_load].[lc_cfg]\nwhere Source_Table like '@{item().Source_Table}'",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DS_Incrementale_loading",
+												"type": "DatasetReference"
+											},
+											"firstRowOnly": false
+										}
+									},
+									{
+										"name": "Incremental data loading",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "get max last update date from cfg",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlDWSource",
+												"sqlReaderQuery": {
+													"value": "SELECT *\nFROM @{item().Source_Table} \nWHERE CONVERT(datetime, @{item().Watermark_Column}, 105) > \n    CONVERT(datetime,\n        SUBSTRING(\n            REPLACE(\n                '@{activity('get max last update date from cfg').output.value[0].Watermark_Value}',\n                'T',\n                ' '\n            ),\n        0,\n        20\n    ),\n    120\n)\n",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlDWSink",
+												"allowCopyCommand": true,
+												"tableOption": "autoCreate",
+												"disableMetricsCollection": false
+											},
+											"enableStaging": true,
+											"stagingSettings": {
+												"linkedServiceName": {
+													"referenceName": "ls_staging_service",
+													"type": "LinkedServiceReference"
+												},
+												"path": "fs-lendingclub-staging"
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_incremental_load_source",
+												"type": "DatasetReference",
+												"parameters": {
+													"STGsourcefile": "@{item().Source_Table}"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_incremental_load_sink",
+												"type": "DatasetReference",
+												"parameters": {
+													"STGdestfile": "@{item().Dest_Table}"
+												}
+											}
+										]
+									},
+									{
+										"name": "Incremental loading data flow",
+										"type": "ExecuteDataFlow",
+										"dependsOn": [
+											{
+												"activity": "Incremental data loading",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"dataflow": {
+												"referenceName": "DF_Incremental_loading",
+												"type": "DataFlowReference",
+												"parameters": {
+													"source_table": {
+														"value": "'@{item().Dest_Table}'",
+														"type": "Expression"
+													},
+													"watermark_field": {
+														"value": "'@{item().Watermark_Column}'",
+														"type": "Expression"
+													},
+													"target_table_name": {
+														"value": "'@{concat(substring(item().name, 0, lastIndexOf(item().name, '.')), '_raw')}'",
+														"type": "Expression"
+													}
+												},
+												"datasetParameters": {
+													"sink1": {
+														"table_name": {
+															"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')), '_final')",
+															"type": "Expression"
+														}
+													}
+												}
+											},
+											"staging": {
+												"linkedService": {
+													"referenceName": "ls_staging_service",
+													"type": "LinkedServiceReference"
+												},
+												"folderPath": "fs-lendingclub-staging"
+											},
+											"compute": {
+												"coreCount": 8,
+												"computeType": "General"
+											},
+											"traceLevel": "Fine"
+										}
+									}
+								]
+							}
+						}
+					]
 				}
 			}
 		],

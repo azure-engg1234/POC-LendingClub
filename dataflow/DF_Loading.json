@@ -30,7 +30,7 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceADLSgen2",
-				"sourceADLSgen2 derive(timestamp = currentDate()) ~> AddingDateColumn",
+				"sourceADLSgen2 derive(last_updated_date = currentDate()) ~> AddingDateColumn",
 				"AddingDateColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",

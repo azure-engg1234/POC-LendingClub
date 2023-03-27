@@ -1,0 +1,16 @@
+{
+	"name": "DS_IncrementalLoadDestTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Loading",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": "customer_data"
+		}
+	}
+}

@@ -1,0 +1,68 @@
+{
+	"name": "DF_Incremental_loading",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_IncrementalLoadDestTable",
+						"type": "DatasetReference"
+					},
+					"name": "IncrementalLoadOutputStream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_target_Incremental_load",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "ls_staging_service",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     source_table as string,",
+				"     watermark_field as string,",
+				"     target_table_name as string",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     staged: true) ~> IncrementalLoadOutputStream",
+				"aggregate1 derive(TableName = $source_table) ~> derivedColumn1",
+				"derivedColumn1 alterRow(updateIf(isNull(max_Created_Modified_Date)==false())) ~> alterRow1",
+				"IncrementalLoadOutputStream aggregate(max_Created_Modified_Date = iif(toString($source_table) == 'customer_data', max(toTimestamp(toString(byName($watermark_field)), 'dd-MM-yyyy HH:mm')), max(toTimestamp(byName($watermark_field), 'dd-MM-yyyy')))) ~> aggregate1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}
