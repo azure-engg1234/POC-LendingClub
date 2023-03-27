@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "DROP TABLE [bronze].[customer_data]\nGO\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "LC_DWH",
+				"poolName": "LC_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

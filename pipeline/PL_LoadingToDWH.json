@@ -77,18 +77,8 @@
 										},
 										"sinkDWH": {
 											"table_name": {
-												"value": "@concat(substring(item().name,0,lastIndexOf(item().name,'.')))\n",
+												"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')), '_raw')",
 												"type": "Expression"
-											}
-										}
-									},
-									"linkedServiceParameters": {
-										"sinkDWH": {
-											"schemaLinkedService": {
-												"table_name": {
-													"value": "@concat(substring(item().name,0,lastIndexOf(item().name,'.')))\n",
-													"type": "Expression"
-												}
 											}
 										}
 									}

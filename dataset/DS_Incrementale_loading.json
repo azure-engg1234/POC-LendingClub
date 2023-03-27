@@ -1,0 +1,56 @@
+{
+	"name": "DS_Incrementale_loading",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureSqlDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Source",
+				"type": "varchar"
+			},
+			{
+				"name": "Source_Table",
+				"type": "varchar"
+			},
+			{
+				"name": "Dest_Table",
+				"type": "varchar"
+			},
+			{
+				"name": "Columns",
+				"type": "varchar"
+			},
+			{
+				"name": "Watermark_Column",
+				"type": "varchar"
+			},
+			{
+				"name": "Watermark_Value",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Enabled",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Load_Flag",
+				"type": "varchar"
+			},
+			{
+				"name": "Status",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "delta_load",
+			"table": "lc_cfg"
+		}
+	}
+}
