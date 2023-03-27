@@ -2,7 +2,7 @@
 	"name": "truncateTableCommands",
 	"properties": {
 		"content": {
-			"query": "TRUNCATE TABLE [gold].[Account_Details_Dim]\nTRUNCATE TABLE [gold].[customer_dim]\nTRUNCATE TABLE gold.Fact_table\nTRUNCATE TABLE gold.investor_dim\nTRUNCATE TABLE gold.Loan_Defaulter_Dim\nTRUNCATE TABLE gold.Loan_Details_Dim\nTRUNCATE TABLE gold.Payment_Details_Dim",
+			"query": "TRUNCATE TABLE [gold].[Account_Details_Dim]\nTRUNCATE TABLE [gold].[customer_dim]\nTRUNCATE TABLE gold.Fact_table\nTRUNCATE TABLE gold.investor_dim\nTRUNCATE TABLE gold.Loan_Defaulter_Dim\nTRUNCATE TABLE gold.Loan_Details_Dim\nTRUNCATE TABLE gold.Payment_Details_Dim\n\nTRUNCATE TABLE bronze.customer_data\n\n",
 			"metadata": {
 				"language": "sql"
 			},
