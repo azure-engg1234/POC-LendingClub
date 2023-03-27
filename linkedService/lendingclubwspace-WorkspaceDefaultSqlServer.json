@@ -1,20 +1,21 @@
 {
 	"name": "lendingclubwspace-WorkspaceDefaultSqlServer",
-	"type": "Microsoft.Synapse/workspaces/linkedservices",
 	"properties": {
-		"typeProperties": {
-			"connectionString": "Data Source=tcp:lendingclubwspace.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
-		},
 		"parameters": {
 			"DBName": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "LC_DWH"
 			}
 		},
+		"annotations": [],
 		"type": "AzureSqlDW",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=ws-lendingclub.sql.azuresynapse.net;Initial Catalog=@{linkedService().DBName}"
+		},
 		"connectVia": {
 			"referenceName": "AutoResolveIntegrationRuntime",
 			"type": "IntegrationRuntimeReference"
-		},
-		"annotations": []
-	}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/linkedservices"
 }
