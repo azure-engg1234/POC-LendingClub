@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "ws-lendingclub"
+		},
+		"LS_AzureSqlDB_connectionString": {
+			"value": ""
+		},
+		"LS_Loading_connectionString": {
+			"value": ""
+		},
+		"LS_Staging_01_accountKey": {
+			"value": ""
+		},
+		"Self_Hosted_IR_password": {
+			"value": ""
+		},
+		"lendingclubwspace-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=ws-lendingclub.sql.azuresynapse.net;Initial Catalog=@{linkedService().DBName}"
+		},
+		"ls_staging_service_accountKey": {
+			"value": ""
+		},
+		"ws-lendingclub-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:ws-lendingclub.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"wslendingclub-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:wslendingclub.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"LS_Staging_01_properties_typeProperties_url": {
+			"value": "https://salendingclub.dfs.core.windows.net/"
+		},
+		"Self_Hosted_IR_properties_typeProperties_host": {
+			"value": "\\\\localhost\\E$\\AzureFileSystem"
+		},
+		"Self_Hosted_IR_properties_typeProperties_userId": {
+			"value": "Shivaraju K"
+		},
+		"ls_staging_service_properties_typeProperties_url": {
+			"value": "https://salendingclub.dfs.core.windows.net/"
+		},
+		"ws-lendingclub-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://salendingclub.dfs.core.windows.net"
+		},
+		"wslendingclub-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://salendingclub.dfs.core.windows.net"
+		}
+	}
+}
