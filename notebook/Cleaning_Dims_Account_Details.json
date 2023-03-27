@@ -14,7 +14,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3ef42e9c-984f-4d6c-a5ff-25b40795bcfb"
+				"spark.autotune.trackingId": "56583d7e-1c2b-4a5e-b890-221be4481c97"
 			}
 		},
 		"metadata": {
@@ -146,9 +146,7 @@
 					}
 				},
 				"source": [
-					"df_account_details_filtered = df_account_details_1.select(\"account_id\",\"member_id\", \"grade\",\"sub_grade\",\"emp_title\",\"emp_length\",\r\n",
-					"\"home_ownership\",\"annual_inc\", \"verification_status\",\"total_acc\",\"application_type\",\"annual_inc_joint\",\r\n",
-					"\"verification_status_joint\", \"tot_hi_cred_lim\")"
+					"df_account_details_filtered = df_account_details_1.select()"
 				],
 				"execution_count": 8
 			},
