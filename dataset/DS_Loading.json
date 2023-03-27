@@ -7,12 +7,10 @@
 		},
 		"parameters": {
 			"schema_name": {
-				"type": "string",
-				"defaultValue": "bronze"
+				"type": "string"
 			},
 			"table_name": {
-				"type": "string",
-				"defaultValue": "loan"
+				"type": "string"
 			}
 		},
 		"annotations": [],

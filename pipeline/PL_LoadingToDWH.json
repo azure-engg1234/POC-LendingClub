@@ -77,8 +77,18 @@
 										},
 										"sinkDWH": {
 											"table_name": {
-												"value": "@concat(substring(item().name,0,lastIndexOf(item().name,'.')))",
+												"value": "@item().name",
 												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceParameters": {
+										"sinkDWH": {
+											"schemaLinkedService": {
+												"table_name": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
 											}
 										}
 									}
@@ -88,7 +98,7 @@
 										"referenceName": "ls_staging_service",
 										"type": "LinkedServiceReference"
 									},
-									"folderPath": "temp-staging"
+									"folderPath": "fs-lendingclub-staging"
 								},
 								"compute": {
 									"coreCount": 8,
