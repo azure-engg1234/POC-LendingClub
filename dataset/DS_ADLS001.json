@@ -2,7 +2,7 @@
 	"name": "DS_ADLS001",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "lendingclubwspace-WorkspaceDefaultStorage",
+			"referenceName": "LS_Staging_01",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileSystem": "fs-lendingclub-staging"
+				"fileSystem": "staging-lending-club"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

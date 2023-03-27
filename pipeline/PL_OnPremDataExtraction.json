@@ -21,8 +21,7 @@
 						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"itemName",
-						"itemType"
+						"childItems"
 					],
 					"storeSettings": {
 						"type": "FileServerReadSettings",

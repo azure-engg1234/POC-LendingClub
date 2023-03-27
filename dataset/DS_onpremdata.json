@@ -2,7 +2,7 @@
 	"name": "DS_onpremdata",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "OnPremise_FS",
+			"referenceName": "Self_Hosted_IR",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "FileServerLocation",
-				"fileName": "*.csv"
+				"folderPath": "source"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

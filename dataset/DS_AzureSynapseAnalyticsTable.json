@@ -2,11 +2,8 @@
 	"name": "DS_AzureSynapseAnalyticsTable",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "lendingclubwspace-WorkspaceDefaultSqlServer",
-			"type": "LinkedServiceReference",
-			"parameters": {
-				"DBName": "LC_DWH"
-			}
+			"referenceName": "LS_Loading",
+			"type": "LinkedServiceReference"
 		},
 		"parameters": {
 			"table_name": {

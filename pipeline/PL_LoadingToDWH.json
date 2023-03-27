@@ -85,7 +85,7 @@
 								},
 								"staging": {
 									"linkedService": {
-										"referenceName": "lendingclubwspace-WorkspaceDefaultStorage",
+										"referenceName": "ls_staging_service",
 										"type": "LinkedServiceReference"
 									},
 									"folderPath": "temp-staging"

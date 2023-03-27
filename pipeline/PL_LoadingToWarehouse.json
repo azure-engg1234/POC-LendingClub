@@ -87,9 +87,10 @@
 								"enableStaging": true,
 								"stagingSettings": {
 									"linkedServiceName": {
-										"referenceName": "lendingclubwspace-WorkspaceDefaultStorage",
+										"referenceName": "ls_staging_service",
 										"type": "LinkedServiceReference"
-									}
+									},
+									"path": "fs-lendingclub-staging"
 								}
 							},
 							"inputs": [

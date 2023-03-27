@@ -19,7 +19,7 @@
 					"value": "@dataset().file_name",
 					"type": "Expression"
 				},
-				"fileSystem": "fs-lendingclub-staging"
+				"fileSystem": "staging-lending-club"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
