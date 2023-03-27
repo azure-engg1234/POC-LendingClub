@@ -77,7 +77,7 @@
 										},
 										"sinkDWH": {
 											"table_name": {
-												"value": "@item().name",
+												"value": "@concat(substring(item().name,0,lastIndexOf(item().name,'.')))\n",
 												"type": "Expression"
 											}
 										}
@@ -86,7 +86,7 @@
 										"sinkDWH": {
 											"schemaLinkedService": {
 												"table_name": {
-													"value": "@item().name",
+													"value": "@concat(substring(item().name,0,lastIndexOf(item().name,'.')))\n",
 													"type": "Expression"
 												}
 											}
