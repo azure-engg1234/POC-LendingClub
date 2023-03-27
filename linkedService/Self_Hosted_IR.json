@@ -1,0 +1,17 @@
+{
+	"name": "Self_Hosted_IR",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "\\\\localhost\\E$\\AzureFileSystem",
+			"userId": "Shivaraju K",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJhMGE4YzQ2Ni0zZGNiLTQyNjItODE3OS02NDVlOGIyYWU4N2EiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-POC-01",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
