@@ -76,8 +76,9 @@
 											}
 										},
 										"sinkDWH": {
+											"schema_name": "bronze",
 											"table_name": {
-												"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')))",
+												"value": "@item().name",
 												"type": "Expression"
 											}
 										}

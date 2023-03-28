@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DS_AzureSynapseAnalyticsTable",
+						"referenceName": "DS_Loading",
 						"type": "DatasetReference"
 					},
 					"name": "sinkDWH"
