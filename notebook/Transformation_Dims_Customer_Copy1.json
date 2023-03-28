@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ba26378a-d59f-4332-9127-10d2d2e9a847"
+				"spark.autotune.trackingId": "11fcfeac-1e8e-4d00-922e-17254fb4b925"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 					"# Show contents of the dataframe\r\n",
 					"# df_customer_dim.show()"
 				],
-				"execution_count": null
+				"execution_count": 46
 			},
 			{
 				"cell_type": "code",
@@ -128,7 +128,7 @@
 				"source": [
 					"df_customer_dim.createOrReplaceTempView(\"customer_details\")"
 				],
-				"execution_count": null
+				"execution_count": 47
 			},
 			{
 				"cell_type": "markdown",
@@ -160,7 +160,7 @@
 					"#Query to find the average age of customers by state and country using pyspark dataframe\r\n",
 					"customer_avg_age=spark.sql(\"SELECT state, country, count(*) as total_count FROM customer_details GROUP BY state, country\")"
 				],
-				"execution_count": null
+				"execution_count": 48
 			},
 			{
 				"cell_type": "code",
@@ -178,7 +178,7 @@
 				"source": [
 					"customer_avg_age.show()"
 				],
-				"execution_count": null
+				"execution_count": 49
 			},
 			{
 				"cell_type": "markdown",
@@ -219,7 +219,7 @@
 					"WHERE prm_status = 'TRUE' \\\r\n",
 					"GROUP BY country, age_range\")"
 				],
-				"execution_count": null
+				"execution_count": 50
 			},
 			{
 				"cell_type": "code",
@@ -237,7 +237,7 @@
 				"source": [
 					"customer_age_range.show()"
 				],
-				"execution_count": null
+				"execution_count": 51
 			},
 			{
 				"cell_type": "markdown",
@@ -287,7 +287,7 @@
 					"ON customer_counts.country = member_counts.country AND customer_counts.state = member_counts.state \\\r\n",
 					" \")"
 				],
-				"execution_count": null
+				"execution_count": 52
 			},
 			{
 				"cell_type": "code",
@@ -312,7 +312,7 @@
 					"# Show contents of the dataframe\r\n",
 					"# df_payment_details_dim.show()"
 				],
-				"execution_count": null
+				"execution_count": 53
 			},
 			{
 				"cell_type": "code",
@@ -330,7 +330,7 @@
 				"source": [
 					"df_payment_details_dim.createOrReplaceTempView(\"payment_details\")"
 				],
-				"execution_count": null
+				"execution_count": 54
 			},
 			{
 				"cell_type": "code",
@@ -353,7 +353,7 @@
 					"spark.conf.set(\"spark.sql.very_good_rated_pts\",650)\r\n",
 					"spark.conf.set(\"spark.sql.excellent_rated_pts\",800)"
 				],
-				"execution_count": null
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -375,7 +375,7 @@
 					"spark.conf.set(\"spark.sql.good_grade_pts\",2000)\r\n",
 					"spark.conf.set(\"spark.sql.very_good_grade_pts\",2500)"
 				],
-				"execution_count": null
+				"execution_count": 56
 			},
 			{
 				"cell_type": "code",
@@ -398,7 +398,7 @@
 					"very_good_grade=\"B\"\r\n",
 					"excellent_grade=\"A\""
 				],
-				"execution_count": null
+				"execution_count": 57
 			},
 			{
 				"cell_type": "code",
@@ -431,7 +431,7 @@
 					"from payment_details p \\\r\n",
 					"inner join customer_details c on c.member_id = p.member_id\")"
 				],
-				"execution_count": null
+				"execution_count": 58
 			},
 			{
 				"cell_type": "code",
@@ -449,7 +449,7 @@
 				"source": [
 					"payment_last_df.createOrReplaceTempView(\"payment_points_df\")"
 				],
-				"execution_count": null
+				"execution_count": 59
 			},
 			{
 				"cell_type": "code",
@@ -467,7 +467,7 @@
 				"source": [
 					"spark.sql(\"select * from payment_points_df where last_payment_pts!= 500 or total_payment_pts!=500 \").show(7)"
 				],
-				"execution_count": null
+				"execution_count": 60
 			},
 			{
 				"cell_type": "markdown",
@@ -503,7 +503,7 @@
 					"                     # Column-pruning i.e., query select column values.\r\n",
 					"                    )"
 				],
-				"execution_count": null
+				"execution_count": 61
 			},
 			{
 				"cell_type": "code",
@@ -521,7 +521,7 @@
 				"source": [
 					"df_loan_defaulter_dim.createOrReplaceTempView(\"loan_default_details\")"
 				],
-				"execution_count": null
+				"execution_count": 62
 			},
 			{
 				"cell_type": "markdown",
@@ -584,7 +584,7 @@
 					"    LEFT JOIN payment_points_df p ON p.member_id = l.member_id\"\r\n",
 					")"
 				],
-				"execution_count": null
+				"execution_count": 63
 			},
 			{
 				"cell_type": "code",
@@ -602,7 +602,7 @@
 				"source": [
 					"loan_default_pts.createOrReplaceTempView(\"loan_default_points_df\")"
 				],
-				"execution_count": null
+				"execution_count": 64
 			},
 			{
 				"cell_type": "code",
@@ -627,7 +627,7 @@
 					"# Show contents of the dataframe\r\n",
 					"# loan_df.show(5)"
 				],
-				"execution_count": null
+				"execution_count": 65
 			},
 			{
 				"cell_type": "code",
@@ -645,7 +645,7 @@
 				"source": [
 					"loan_df.createOrReplaceTempView(\"loan_details\")"
 				],
-				"execution_count": null
+				"execution_count": 66
 			},
 			{
 				"cell_type": "markdown",
@@ -684,7 +684,7 @@
 					"# Show contents of the dataframe\r\n",
 					"# account_df.show(5)"
 				],
-				"execution_count": null
+				"execution_count": 67
 			},
 			{
 				"cell_type": "code",
@@ -702,7 +702,7 @@
 				"source": [
 					"account_df.createOrReplaceTempView(\"account_details\")"
 				],
-				"execution_count": null
+				"execution_count": 68
 			},
 			{
 				"cell_type": "code",
@@ -727,7 +727,7 @@
 					"# Show contents of the dataframe\r\n",
 					"# df_account_details_dim.show(5)"
 				],
-				"execution_count": null
+				"execution_count": 69
 			},
 			{
 				"cell_type": "markdown",
@@ -815,7 +815,7 @@
 					" LEFT JOIN loan_details l ON ldef.member_id = l.member_id \\\r\n",
 					" LEFT JOIN account_details a ON a.member_id = ldef.member_id\")"
 				],
-				"execution_count": null
+				"execution_count": 70
 			},
 			{
 				"cell_type": "code",
@@ -833,7 +833,7 @@
 				"source": [
 					"financial_df.show(5)"
 				],
-				"execution_count": null
+				"execution_count": 71
 			},
 			{
 				"cell_type": "code",
@@ -851,7 +851,7 @@
 				"source": [
 					"financial_df.printSchema()"
 				],
-				"execution_count": null
+				"execution_count": 72
 			},
 			{
 				"cell_type": "code",
@@ -869,7 +869,7 @@
 				"source": [
 					"financial_df.createOrReplaceTempView(\"loan_score_details\")"
 				],
-				"execution_count": null
+				"execution_count": 73
 			},
 			{
 				"cell_type": "code",
@@ -891,7 +891,7 @@
 					"((loan_status_pts+home_pts+credit_limit_pts+grade_pts)*0.35) as financial_health_pts \\\r\n",
 					"FROM loan_score_details\")"
 				],
-				"execution_count": null
+				"execution_count": 74
 			},
 			{
 				"cell_type": "code",
@@ -909,7 +909,7 @@
 				"source": [
 					"loan_score.show(5)"
 				],
-				"execution_count": null
+				"execution_count": 75
 			},
 			{
 				"cell_type": "code",
@@ -927,7 +927,7 @@
 				"source": [
 					"loan_score.printSchema()"
 				],
-				"execution_count": null
+				"execution_count": 76
 			},
 			{
 				"cell_type": "code",
@@ -943,30 +943,12 @@
 					}
 				},
 				"source": [
-					"visualization.loan_score"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"(df.write\r\n",
+					"(loan_score.write\r\n",
 					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					" .mode(\"overwrite\")\r\n",
 					" .synapsesql(\"LC_DWH.visualization.loan_score\", Constants.INTERNAL))"
 				],
-				"execution_count": null
+				"execution_count": 79
 			},
 			{
 				"cell_type": "code",
@@ -985,7 +967,7 @@
 					"\r\n",
 					"loan_score.createOrReplaceTempView(\"loan_score_pts\")"
 				],
-				"execution_count": null
+				"execution_count": 80
 			},
 			{
 				"cell_type": "code",
@@ -1005,7 +987,7 @@
 					"(payment_history_pts+defaulters_history_pts+financial_health_pts) as loan_score \\\r\n",
 					"from loan_score_pts ls \")"
 				],
-				"execution_count": null
+				"execution_count": 81
 			},
 			{
 				"cell_type": "code",
@@ -1023,7 +1005,7 @@
 				"source": [
 					"loan_score_final.createOrReplaceTempView(\"loan_score_eval\")"
 				],
-				"execution_count": null
+				"execution_count": 82
 			},
 			{
 				"cell_type": "code",
@@ -1050,7 +1032,7 @@
 					"end as loan_final_grade \\\r\n",
 					"from loan_score_eval ls\")"
 				],
-				"execution_count": null
+				"execution_count": 83
 			},
 			{
 				"cell_type": "code",
@@ -1068,7 +1050,7 @@
 				"source": [
 					"loan_score_final.createOrReplaceTempView(\"loan_final_table\")"
 				],
-				"execution_count": null
+				"execution_count": 84
 			},
 			{
 				"cell_type": "code",
@@ -1086,7 +1068,7 @@
 				"source": [
 					"loan_score_final.show(10)"
 				],
-				"execution_count": 37
+				"execution_count": 85
 			},
 			{
 				"cell_type": "code",
@@ -1122,7 +1104,7 @@
 				"source": [
 					"spark.sql(\"select * from loan_final_table where loan_final_grade in ('C') \").show()"
 				],
-				"execution_count": 38
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -1148,7 +1130,7 @@
 					"#  # Required parameter - Three-part table name to which data will be written\r\n",
 					"#  .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 39
+				"execution_count": null
 			}
 		]
 	}
