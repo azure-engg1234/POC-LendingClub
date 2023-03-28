@@ -1,13 +1,6 @@
 {
 	"name": "DS_incremental_load_source",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "lendingclubwspace-WorkspaceDefaultSqlServer",
-			"type": "LinkedServiceReference",
-			"parameters": {
-				"DBName": "LC_DWH"
-			}
-		},
 		"parameters": {
 			"STGsourcefile": {
 				"type": "string"
