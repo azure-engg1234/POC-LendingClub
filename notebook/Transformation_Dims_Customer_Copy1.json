@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cff4e15a-00cb-4466-a329-5b6891dca6b6"
+				"spark.autotune.trackingId": "ba26378a-d59f-4332-9127-10d2d2e9a847"
 			}
 		},
 		"metadata": {
@@ -84,7 +84,7 @@
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.functions import avg, count,col,when,countDistinct,round, filter"
 				],
-				"execution_count": 9
+				"execution_count": 45
 			},
 			{
 				"cell_type": "code",
@@ -103,15 +103,14 @@
 					"\r\n",
 					"# Read from existing internal table\r\n",
 					"df_customer_dim = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.gold.customer_dim\")\r\n",
-					"                     # Column-pruning i.e., query select column values.\r\n",
 					"                    )\r\n",
 					"\r\n",
 					"# Show contents of the dataframe\r\n",
-					"df_customer_dim.show()"
+					"# df_customer_dim.show()"
 				],
-				"execution_count": 10
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -129,7 +128,7 @@
 				"source": [
 					"df_customer_dim.createOrReplaceTempView(\"customer_details\")"
 				],
-				"execution_count": 11
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -161,7 +160,7 @@
 					"#Query to find the average age of customers by state and country using pyspark dataframe\r\n",
 					"customer_avg_age=spark.sql(\"SELECT state, country, count(*) as total_count FROM customer_details GROUP BY state, country\")"
 				],
-				"execution_count": 48
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -179,7 +178,7 @@
 				"source": [
 					"customer_avg_age.show()"
 				],
-				"execution_count": 49
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -220,7 +219,7 @@
 					"WHERE prm_status = 'TRUE' \\\r\n",
 					"GROUP BY country, age_range\")"
 				],
-				"execution_count": 53
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -238,7 +237,7 @@
 				"source": [
 					"customer_age_range.show()"
 				],
-				"execution_count": 54
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -288,25 +287,7 @@
 					"ON customer_counts.country = member_counts.country AND customer_counts.state = member_counts.state \\\r\n",
 					" \")"
 				],
-				"execution_count": 56
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"member_percentage_df.show()"
-				],
-				"execution_count": 57
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -324,15 +305,14 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"df_payment_details_dim = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.gold.Payment_Details_Dim\")\r\n",
-					"                     # Column-pruning i.e., query select column values.\r\n",
 					"                    )\r\n",
 					"\r\n",
 					"# Show contents of the dataframe\r\n",
-					"df_payment_details_dim.show()"
+					"# df_payment_details_dim.show()"
 				],
-				"execution_count": 12
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -350,7 +330,7 @@
 				"source": [
 					"df_payment_details_dim.createOrReplaceTempView(\"payment_details\")"
 				],
-				"execution_count": 13
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -373,7 +353,7 @@
 					"spark.conf.set(\"spark.sql.very_good_rated_pts\",650)\r\n",
 					"spark.conf.set(\"spark.sql.excellent_rated_pts\",800)"
 				],
-				"execution_count": 14
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -395,7 +375,7 @@
 					"spark.conf.set(\"spark.sql.good_grade_pts\",2000)\r\n",
 					"spark.conf.set(\"spark.sql.very_good_grade_pts\",2500)"
 				],
-				"execution_count": 15
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -418,7 +398,7 @@
 					"very_good_grade=\"B\"\r\n",
 					"excellent_grade=\"A\""
 				],
-				"execution_count": 16
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -451,7 +431,7 @@
 					"from payment_details p \\\r\n",
 					"inner join customer_details c on c.member_id = p.member_id\")"
 				],
-				"execution_count": 17
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -469,7 +449,7 @@
 				"source": [
 					"payment_last_df.createOrReplaceTempView(\"payment_points_df\")"
 				],
-				"execution_count": 18
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -487,7 +467,7 @@
 				"source": [
 					"spark.sql(\"select * from payment_points_df where last_payment_pts!= 500 or total_payment_pts!=500 \").show(7)"
 				],
-				"execution_count": 19
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -518,33 +498,12 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"df_loan_defaulter_dim = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.gold.Loan_Defaulter_Dim\")\r\n",
 					"                     # Column-pruning i.e., query select column values.\r\n",
-					"                    )\r\n",
-					"\r\n",
-					"# Show contents of the dataframe\r\n",
-					""
+					"                    )"
 				],
-				"execution_count": 20
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"display(df_loan_defaulter_dim.show(5))"
-				],
-				"execution_count": 21
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -562,7 +521,7 @@
 				"source": [
 					"df_loan_defaulter_dim.createOrReplaceTempView(\"loan_default_details\")"
 				],
-				"execution_count": 22
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -625,7 +584,7 @@
 					"    LEFT JOIN payment_points_df p ON p.member_id = l.member_id\"\r\n",
 					")"
 				],
-				"execution_count": 23
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -643,7 +602,7 @@
 				"source": [
 					"loan_default_pts.createOrReplaceTempView(\"loan_default_points_df\")"
 				],
-				"execution_count": 24
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -661,15 +620,14 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"loan_df = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.gold.Loan_Details_Dim\")\r\n",
-					"                     # Column-pruning i.e., query select column values.\r\n",
 					"                    )\r\n",
 					"\r\n",
 					"# Show contents of the dataframe\r\n",
-					"loan_df.show(5)"
+					"# loan_df.show(5)"
 				],
-				"execution_count": 25
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -687,7 +645,7 @@
 				"source": [
 					"loan_df.createOrReplaceTempView(\"loan_details\")"
 				],
-				"execution_count": 26
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -719,15 +677,14 @@
 					"\r\n",
 					"# Read from existing internal table\r\n",
 					"account_df = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.gold.Account_Details_Dim\")\r\n",
-					"                     # Column-pruning i.e., query select column values.\r\n",
 					"                    )\r\n",
 					"\r\n",
 					"# Show contents of the dataframe\r\n",
-					"account_df.show(5)"
+					"# account_df.show(5)"
 				],
-				"execution_count": 27
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -745,7 +702,7 @@
 				"source": [
 					"account_df.createOrReplaceTempView(\"account_details\")"
 				],
-				"execution_count": 28
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -763,33 +720,14 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"df_account_details_dim = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.gold.Account_Details_Dim\")\r\n",
-					"                     # Column-pruning i.e., query select column values.\r\n",
 					"                    )\r\n",
 					"\r\n",
 					"# Show contents of the dataframe\r\n",
-					"df_account_details_dim.show(5)"
+					"# df_account_details_dim.show(5)"
 				],
-				"execution_count": 29
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"dfToReadFromTable.createOrReplaceTempView(\"customer_details\")"
-				],
-				"execution_count": 30
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -877,7 +815,7 @@
 					" LEFT JOIN loan_details l ON ldef.member_id = l.member_id \\\r\n",
 					" LEFT JOIN account_details a ON a.member_id = ldef.member_id\")"
 				],
-				"execution_count": 31
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -893,9 +831,9 @@
 					}
 				},
 				"source": [
-					"financial_df.show()"
+					"financial_df.show(5)"
 				],
-				"execution_count": 32
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -913,7 +851,7 @@
 				"source": [
 					"financial_df.printSchema()"
 				],
-				"execution_count": 33
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -931,7 +869,7 @@
 				"source": [
 					"financial_df.createOrReplaceTempView(\"loan_score_details\")"
 				],
-				"execution_count": 37
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -953,7 +891,7 @@
 					"((loan_status_pts+home_pts+credit_limit_pts+grade_pts)*0.35) as financial_health_pts \\\r\n",
 					"FROM loan_score_details\")"
 				],
-				"execution_count": 39
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -971,7 +909,64 @@
 				"source": [
 					"loan_score.show(5)"
 				],
-				"execution_count": 40
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"loan_score.printSchema()"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"visualization.loan_score"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"(df.write\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					" .mode(\"overwrite\")\r\n",
+					" .synapsesql(\"LC_DWH.visualization.loan_score\", Constants.INTERNAL))"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -990,7 +985,7 @@
 					"\r\n",
 					"loan_score.createOrReplaceTempView(\"loan_score_pts\")"
 				],
-				"execution_count": 41
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -1010,7 +1005,7 @@
 					"(payment_history_pts+defaulters_history_pts+financial_health_pts) as loan_score \\\r\n",
 					"from loan_score_pts ls \")"
 				],
-				"execution_count": 42
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -1028,7 +1023,7 @@
 				"source": [
 					"loan_score_final.createOrReplaceTempView(\"loan_score_eval\")"
 				],
-				"execution_count": 43
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -1055,7 +1050,7 @@
 					"end as loan_final_grade \\\r\n",
 					"from loan_score_eval ls\")"
 				],
-				"execution_count": 44
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -1073,7 +1068,7 @@
 				"source": [
 					"loan_score_final.createOrReplaceTempView(\"loan_final_table\")"
 				],
-				"execution_count": 45
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -1091,7 +1086,25 @@
 				"source": [
 					"loan_score_final.show(10)"
 				],
-				"execution_count": 46
+				"execution_count": 37
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -1109,7 +1122,7 @@
 				"source": [
 					"spark.sql(\"select * from loan_final_table where loan_final_grade in ('C') \").show()"
 				],
-				"execution_count": 47
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
@@ -1130,12 +1143,12 @@
 					"#  # to `synapsesql` method is used to infer the Synapse Dedicated SQL End Point.\r\n",
 					"#  # .option(Constants.SERVER, \"lendingclubwspace.sql.azuresynapse.net\")\r\n",
 					"#  # if `Constants.TEMP_FOLDER` is not provided, the connector will use the runtime staging directory config (see section on Configuration Options for details).\r\n",
-					"#  .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"#  .mode(\"overwrite\")\r\n",
 					"#  # Required parameter - Three-part table name to which data will be written\r\n",
 					"#  .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 36
+				"execution_count": 39
 			}
 		]
 	}

@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 13",
+	"properties": {
+		"content": {
+			"query": "CREATE SCHEMA [visualization]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "LC_DWH",
+				"poolName": "LC_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
