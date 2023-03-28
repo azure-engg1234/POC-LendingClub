@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 11",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [customer_id]\n,[member_id]\n,[first_name]\n,[last_name]\n,[prm_status]\n,[age]\n,[state]\n,[country]\n FROM [gold].[customer_dim]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "LC_DWH",
+				"poolName": "LC_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

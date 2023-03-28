@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 12",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [id]\n,[loan_id]\n,[customer_id]\n,[account_id]\n,[transaction_id]\n,[defaulter_id]\n,[investor_id]\n,[loan_amnt]\n FROM [gold].[lending_club_fact]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "LC_DWH",
+				"poolName": "LC_DWH"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
