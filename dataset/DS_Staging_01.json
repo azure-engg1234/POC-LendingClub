@@ -19,7 +19,8 @@
 					"value": "@dataset().file_name",
 					"type": "Expression"
 				},
-				"fileSystem": "staging-lending-club"
+				"folderPath": "Staging",
+				"fileSystem": "lendingclub"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

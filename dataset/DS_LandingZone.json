@@ -1,5 +1,5 @@
 {
-	"name": "DS_Staging_00",
+	"name": "DS_LandingZone",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Staging_01",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "Staging",
+				"folderPath": "Landing",
 				"fileSystem": "lendingclub"
 			},
 			"columnDelimiter": ",",
@@ -19,6 +19,5 @@
 			"quoteChar": "\""
 		},
 		"schema": []
-	},
-	"type": "Microsoft.Synapse/workspaces/datasets"
+	}
 }
