@@ -3,6 +3,10 @@
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "LCsparkpool",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -14,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "530337e8-5c24-4745-99b4-8a843bebd5b0"
+				"spark.autotune.trackingId": "7243b42f-783d-42bb-8500-71831204cb91"
 			}
 		},
 		"metadata": {
@@ -26,6 +30,21 @@
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/5e8b7639-1039-4c46-a250-81622382b0f1/resourceGroups/RG_lendingClub/providers/Microsoft.Synapse/workspaces/ws-lendingclub/bigDataPools/LCsparkpool",
+				"name": "LCsparkpool",
+				"type": "Spark",
+				"endpoint": "https://ws-lendingclub.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -61,7 +80,7 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"df_investor_data = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@lendingclubadlsgen2.dfs.core.windows.net/temporary-staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.investor_data\")\r\n",
 					"                    )"
 				],
@@ -84,7 +103,7 @@
 				"source": [
 					"display(df_investor_data.limit(5))"
 				],
-				"execution_count": 3
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -133,6 +152,24 @@
 						"transient": {
 							"deleting": false
 						}
+					}
+				},
+				"source": [
+					"df_investor_data = df_investor_data.drop('last_updated_date')"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
 					},
 					"collapsed": false
 				},
@@ -157,7 +194,7 @@
 				"source": [
 					"df_investor_data = df_investor_data.withColumnRenamed(\"loan_funded_amt\",\"loan_funded_amount\") "
 				],
-				"execution_count": 7
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -176,7 +213,7 @@
 					"# Casting the column to change the dataype\r\n",
 					"df_investor_data = df_investor_data.withColumn(\"age\",df_investor_data.age.cast('int'))"
 				],
-				"execution_count": 10
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -195,7 +232,7 @@
 					"# Casting the column to change the dataype\r\n",
 					"df_investor_data = df_investor_data.withColumn(\"loan_funded_amount\",df_investor_data.loan_funded_amount.cast('int'))"
 				],
-				"execution_count": 11
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
@@ -300,7 +337,7 @@
 				"metadata": {
 					"jupyter": {
 						"source_hidden": false,
-						"outputs_hidden": true
+						"outputs_hidden": false
 					},
 					"nteract": {
 						"transient": {
@@ -310,7 +347,7 @@
 				},
 				"source": [
 					"(df_investor_data.write\r\n",
-					" .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					" .mode(\"overwrite\")\r\n",
 					" .synapsesql(\"LC_DWH.gold.investor_dim\", Constants.INTERNAL))"
 				],
