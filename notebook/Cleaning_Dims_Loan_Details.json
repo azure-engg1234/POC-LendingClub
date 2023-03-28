@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "03af07ab-9f55-4c99-b47b-e2fdc8ad6521"
+				"spark.autotune.trackingId": "ef16655e-7115-43d4-b17f-557b83b022a9"
 			}
 		},
 		"metadata": {
@@ -32,10 +32,10 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/50822855-539b-48a3-afcf-322ffaf42318/resourceGroups/LendingClub_POC/providers/Microsoft.Synapse/workspaces/lendingclubwspace/bigDataPools/LCsparkpool",
+				"id": "/subscriptions/5e8b7639-1039-4c46-a250-81622382b0f1/resourceGroups/RG_lendingClub/providers/Microsoft.Synapse/workspaces/ws-lendingclub/bigDataPools/LCsparkpool",
 				"name": "LCsparkpool",
 				"type": "Spark",
-				"endpoint": "https://lendingclubwspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
+				"endpoint": "https://ws-lendingclub.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
 				"auth": {
 					"type": "AAD",
 					"authResource": "https://dev.azuresynapse.net"
@@ -53,7 +53,7 @@
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
-						"outputs_hidden": true
+						"outputs_hidden": false
 					},
 					"collapsed": false
 				},
@@ -63,9 +63,9 @@
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.types import DecimalType\r\n",
 					"from pyspark.sql.window import Window\r\n",
-					"from pyspark.sql.functions import concat, col, lit, row_number"
+					"from pyspark.sql.functions import concat, col, lit, row_number, split"
 				],
-				"execution_count": 1
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -83,7 +83,7 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"df_loan_details = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@lendingclubadlsgen2.dfs.core.windows.net/temporary-staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.loan_details\")\r\n",
 					"                    )"
 				],
@@ -104,9 +104,9 @@
 					"collapsed": false
 				},
 				"source": [
-					"# display(df_loan_details.limit(5))"
+					"display(df_loan_details.limit(5))"
 				],
-				"execution_count": 2
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -122,10 +122,9 @@
 					}
 				},
 				"source": [
-					"df_loan_details_1 = df_loan_details.withColumn(\"loan_id\",row_number() \\\r\n",
-					".over( Window.orderBy(\"id\")))"
+					"df_loan_details = df_loan_details.withColumn('loan_id', split(df_loan_details['member_id'], 'I').getItem(1))"
 				],
-				"execution_count": 4
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -160,10 +159,64 @@
 					}
 				},
 				"source": [
-					"df_loan_details_filtered = df_loan_details_1.select(\"loan_id\", \"member_id\", \"loan_amnt\",\"funded_amnt\",\"term\",\"int_rate\",\"installment\",\"issue_d\",\r\n",
+					"df_loan_details_filtered = df_loan_details.select(\"loan_id\", \"member_id\", \"loan_amnt\",\"funded_amnt\",\"term\",\"int_rate\",\"installment\",\"issue_d\",\r\n",
 					"\"loan_status\",\"purpose\",\"title\",\"disbursement_method\")"
 				],
-				"execution_count": 6
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_loan_details_filtered = df_loan_details_filtered.withColumn(\"loan_id\",df_loan_details_filtered.loan_id.cast('int'))"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_loan_details_filtered = df_loan_details_filtered.withColumn('loan_id', ( df_loan_details_filtered['loan_id'] - 999 ) )"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_loan_details_filtered.printSchema()"
+				],
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -181,7 +234,7 @@
 				"source": [
 					"df_loan_details_filtered = df_loan_details_filtered.withColumn(\"loan_id\", concat(lit(\"LNI\"), col(\"loan_id\")))"
 				],
-				"execution_count": 8
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -198,9 +251,9 @@
 					"collapsed": false
 				},
 				"source": [
-					"# display(df_loan_details_filtered.limit(2))"
+					"display(df_loan_details_filtered.limit(2))"
 				],
-				"execution_count": 9
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -231,7 +284,7 @@
 				"source": [
 					"df_loan_details_filtered = df_loan_details_filtered.withColumn(\"loan_amnt\",df_loan_details_filtered.loan_amnt.cast('int'))"
 				],
-				"execution_count": 11
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -249,7 +302,7 @@
 				"source": [
 					"df_loan_details_filtered = df_loan_details_filtered.withColumn(\"funded_amnt\",df_loan_details_filtered.funded_amnt.cast('int'))"
 				],
-				"execution_count": 12
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -267,7 +320,7 @@
 				"source": [
 					"df_loan_details_filtered = df_loan_details_filtered.withColumn(\"installment\",df_loan_details_filtered.installment.cast(DecimalType(18,2)))"
 				],
-				"execution_count": 13
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
@@ -400,11 +453,11 @@
 				},
 				"source": [
 					"(df_loan_details_filtered.write\r\n",
-					" .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					" .mode(\"overwrite\")\r\n",
-					" .synapsesql(\"LC_DWH.gold.Loan_Details_Dim\", Constants.INTERNAL))"
+					" .synapsesql(\"LC_DWH.gold.loan_details_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 14
+				"execution_count": 18
 			}
 		]
 	}

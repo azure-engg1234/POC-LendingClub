@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1e94e5e8-faec-49b1-9ebd-cfe5a690f3ec"
+				"spark.autotune.trackingId": "4ff230b6-a582-4693-864a-4f5ce05befdd"
 			}
 		},
 		"metadata": {
@@ -32,10 +32,10 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/50822855-539b-48a3-afcf-322ffaf42318/resourceGroups/LendingClub_POC/providers/Microsoft.Synapse/workspaces/lendingclubwspace/bigDataPools/LCsparkpool",
+				"id": "/subscriptions/5e8b7639-1039-4c46-a250-81622382b0f1/resourceGroups/RG_lendingClub/providers/Microsoft.Synapse/workspaces/ws-lendingclub/bigDataPools/LCsparkpool",
 				"name": "LCsparkpool",
 				"type": "Spark",
-				"endpoint": "https://lendingclubwspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
+				"endpoint": "https://ws-lendingclub.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
 				"auth": {
 					"type": "AAD",
 					"authResource": "https://dev.azuresynapse.net"
@@ -80,11 +80,11 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"df_customer_data = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@lendingclubadlsgen2.dfs.core.windows.net/temporary-staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.customer_data\")\r\n",
 					"                    )"
 				],
-				"execution_count": 3
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -116,7 +116,43 @@
 					"df_customer_data = df_customer_data.withColumnRenamed(\"mem_id\", \"member_id\").withColumnRenamed(\"fst_name\", \"first_name\")\\\r\n",
 					".withColumnRenamed(\"lst_name\", \"last_name\").withColumnRenamed(\"cust_id\",\"customer_id\")"
 				],
-				"execution_count": 13
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_customer_data = df_customer_data.drop(col(\"last_updated_date\"))"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_customer_data.show(5)"
+				],
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -153,7 +189,7 @@
 					"# Casting the column to change the datatype\r\n",
 					"df_customer_data = df_customer_data.withColumn(\"age\",df_customer_data.age.cast('int'))"
 				],
-				"execution_count": 7
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -258,7 +294,7 @@
 				"metadata": {
 					"jupyter": {
 						"source_hidden": false,
-						"outputs_hidden": true
+						"outputs_hidden": false
 					},
 					"nteract": {
 						"transient": {
@@ -268,11 +304,11 @@
 				},
 				"source": [
 					"(df_customer_data.write\r\n",
-					" .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					" .mode(\"overwrite\")\r\n",
 					" .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 15
+				"execution_count": 13
 			}
 		]
 	}

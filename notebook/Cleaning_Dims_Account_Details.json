@@ -3,6 +3,10 @@
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "LCsparkpool",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -14,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "56583d7e-1c2b-4a5e-b890-221be4481c97"
+				"spark.autotune.trackingId": "c436b4ee-a786-4862-96ea-47e7c0eabde0"
 			}
 		},
 		"metadata": {
@@ -26,6 +30,21 @@
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/5e8b7639-1039-4c46-a250-81622382b0f1/resourceGroups/RG_lendingClub/providers/Microsoft.Synapse/workspaces/ws-lendingclub/bigDataPools/LCsparkpool",
+				"name": "LCsparkpool",
+				"type": "Spark",
+				"endpoint": "https://ws-lendingclub.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/LCsparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -48,10 +67,10 @@
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.window import Window\r\n",
-					"from pyspark.sql.functions import row_number, concat, col, lit\r\n",
+					"from pyspark.sql.functions import row_number, concat, col, lit, split\r\n",
 					"from pyspark.sql.types import DecimalType"
 				],
-				"execution_count": 2
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -69,11 +88,11 @@
 				"source": [
 					"# Read from existing internal table\r\n",
 					"df_account_details = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@lendingclubadlsgen2.dfs.core.windows.net/temporary-staging\")\r\n",
+					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.loan_details\")\r\n",
 					"                    )"
 				],
-				"execution_count": 4
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -90,9 +109,9 @@
 					"collapsed": false
 				},
 				"source": [
-					"# display(df_account_details.limit(5))"
+					"display(df_account_details.limit(5))"
 				],
-				"execution_count": 5
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -127,8 +146,26 @@
 					}
 				},
 				"source": [
-					"df_account_details_1 = df_account_details.withColumn(\"account_id\",row_number() \\\r\n",
-					".over( Window.orderBy(\"id\")))"
+					"df_account_details = df_account_details.withColumn('account_id', split(df_account_details['member_id'], 'I').getItem(1))"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# df_account_details_1 = df_account_details.withColumn(\"account_id\",row_number() \\\r\n",
+					"# .over( Window.orderBy(\"id\")))"
 				],
 				"execution_count": 7
 			},
@@ -146,9 +183,47 @@
 					}
 				},
 				"source": [
-					"df_account_details_filtered = df_account_details_1.select()"
+					"df_account_details_filtered = df_account_details.select(\"account_id\",\"member_id\", \"grade\",\"sub_grade\",\"emp_title\",\"emp_length\",\r\n",
+					"\"home_ownership\",\"annual_inc\", \"verification_status\",\"total_acc\",\"application_type\",\"annual_inc_joint\",\r\n",
+					"\"verification_status_joint\", \"tot_hi_cred_lim\")"
 				],
-				"execution_count": 8
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_account_details_filtered = df_account_details_filtered.withColumn(\"account_id\", concat(lit(\"ACCID\"), col(\"account_id\")))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"display(df_account_details_filtered.show(5))"
+				],
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -168,24 +243,6 @@
 					"# display(df_account_details_filtered.filter(col(\"annual_inc_joint\").isNotNull()).limit(2))"
 				],
 				"execution_count": 11
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_account_details_filtered = df_account_details_filtered.withColumn(\"account_id\", concat(lit(\"ACCID\"), col(\"account_id\")))"
-				],
-				"execution_count": 12
 			},
 			{
 				"cell_type": "markdown",
@@ -216,7 +273,7 @@
 				"source": [
 					"df_account_details_filtered = df_account_details_filtered.withColumn(\"tot_hi_cred_lim\",df_account_details_filtered.tot_hi_cred_lim.cast('int'))"
 				],
-				"execution_count": 14
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -234,7 +291,7 @@
 				"source": [
 					"df_account_details_filtered = df_account_details_filtered.withColumn(\"annual_inc_joint\",df_account_details_filtered.annual_inc_joint.cast('int'))"
 				],
-				"execution_count": 15
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -252,7 +309,7 @@
 				"source": [
 					"df_account_details_filtered = df_account_details_filtered.withColumn(\"total_acc\",df_account_details_filtered.total_acc.cast('int'))"
 				],
-				"execution_count": 17
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -270,7 +327,7 @@
 				"source": [
 					"df_account_details_filtered = df_account_details_filtered.withColumn(\"annual_inc\",df_account_details_filtered.annual_inc.cast('int'))"
 				],
-				"execution_count": 18
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -389,9 +446,9 @@
 					}
 				},
 				"source": [
-					"# df_account_details_filtered.printSchema()"
+					"df_account_details_filtered.printSchema()"
 				],
-				"execution_count": 53
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
@@ -421,11 +478,11 @@
 				},
 				"source": [
 					"(df_account_details_filtered.write\r\n",
-					" .option(Constants.TEMP_FOLDER, \"abfss://fs-lendingclub-staging@lendingclubadlsgen2.dfs.core.windows.net/temp_staging\")\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					" .mode(\"overwrite\")\r\n",
-					" .synapsesql(\"LC_DWH.gold.Account_Details_Dim\", Constants.INTERNAL))"
+					" .synapsesql(\"LC_DWH.gold.account_details_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 27
+				"execution_count": 18
 			}
 		]
 	}

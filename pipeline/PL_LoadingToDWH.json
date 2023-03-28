@@ -77,7 +77,7 @@
 										},
 										"sinkDWH": {
 											"table_name": {
-												"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')), '_raw')",
+												"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')))",
 												"type": "Expression"
 											}
 										}
