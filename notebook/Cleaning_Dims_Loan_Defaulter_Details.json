@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8e6c2fa7-4c3b-44cc-8539-bcd676307047"
+				"spark.autotune.trackingId": "dc698269-20bd-45d9-8f7c-847ad0c569a8"
 			}
 		},
 		"metadata": {
@@ -82,7 +82,7 @@
 					"from pyspark.sql.window import Window\r\n",
 					"from pyspark.sql.functions import concat, col, lit, row_number, split"
 				],
-				"execution_count": null
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -116,7 +116,20 @@
 					"                     .synapsesql(\"LC_DWH.bronze.loan_details\")\r\n",
 					"                    )"
 				],
-				"execution_count": 2
+				"execution_count": 3
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Creating Defaulter Id as surrogated key"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -132,9 +145,23 @@
 					}
 				},
 				"source": [
-					"df_loan_details = df_loan_details.withColumn('defaulter_id', split(df_loan_details['member_id'], 'I').getItem(1))"
+					"df_loan_details = df_loan_details.withColumn('defaulter_id', split(df_loan_details['member_id'], 'I').getItem(1))\r\n",
+					"df_loan_details = df_loan_details.withColumn(\"defaulter_id\", concat(lit(\"DEF\"), col(\"defaulter_id\")))"
 				],
-				"execution_count": 7
+				"execution_count": 4
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Selecting Required column"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -154,7 +181,43 @@
 					"\"pub_rec\",\"total_rec_late_fee\", \"delinq_amnt\", \"pub_rec_bankruptcies\",\"hardship_flag\",\r\n",
 					"\"hardship_type\", \"hardship_amount\", \"hardship_length\")"
 				],
-				"execution_count": 8
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Type Casting: Converting Datatypes of Columns"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_defaulter_details = df_defaulter_details.withColumn(\"delinq_2yrs\",df_defaulter_details.delinq_2yrs.cast('int'))\r\n",
+					"df_defaulter_details = df_defaulter_details.withColumn(\"inq_last_6mths\",df_defaulter_details.inq_last_6mths.cast('int'))\r\n",
+					"df_defaulter_details = df_defaulter_details.withColumn(\"pub_rec\",df_defaulter_details.pub_rec.cast('int'))\r\n",
+					"df_defaulter_details = df_defaulter_details.withColumn(\"total_rec_late_fee\",df_defaulter_details.total_rec_late_fee.cast('int'))\r\n",
+					"df_defaulter_details = df_defaulter_details.withColumn(\"delinq_amnt\",df_defaulter_details.delinq_amnt.cast('int'))\r\n",
+					"df_defaulter_details = df_defaulter_details.withColumn(\"pub_rec_bankruptcies\",df_defaulter_details.pub_rec_bankruptcies.cast('int'))"
+				],
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -171,251 +234,9 @@
 					"collapsed": false
 				},
 				"source": [
-					"# display(df_defaulter_details.limit(10))"
+					"display(df_defaulter_details)"
 				],
-				"execution_count": 8
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_defaulter_details = df_defaulter_details.withColumn(\"defaulter_id\", concat(lit(\"DEF\"), col(\"defaulter_id\")))"
-				],
-				"execution_count": 9
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"## Casting: Changing the datatype of the columns"
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_defaulter_details = df_defaulter_details.withColumn(\"delinq_2yrs\",df_defaulter_details.delinq_2yrs.cast('int'))"
-				],
-				"execution_count": 10
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_defaulter_details = df_defaulter_details.withColumn(\"inq_last_6mths\",df_defaulter_details.inq_last_6mths.cast('int'))"
-				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_defaulter_details = df_defaulter_details.withColumn(\"pub_rec\",df_defaulter_details.pub_rec.cast('int'))"
-				],
-				"execution_count": 12
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_defaulter_details = df_defaulter_details.withColumn(\"total_rec_late_fee\",df_defaulter_details.total_rec_late_fee.cast('int'))"
-				],
-				"execution_count": 13
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_defaulter_details = df_defaulter_details.withColumn(\"delinq_amnt\",df_defaulter_details.delinq_amnt.cast('int'))"
-				],
-				"execution_count": 14
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_defaulter_details = df_defaulter_details.withColumn(\"pub_rec_bankruptcies\",df_defaulter_details.pub_rec_bankruptcies.cast('int'))"
-				],
-				"execution_count": 15
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"## Dataset Analysis"
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_defaulter_details_pd = df_defaulter_details.toPandas()"
-				],
-				"execution_count": 45
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_defaulter_details_pd.describe()"
-				],
-				"execution_count": 46
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_defaulter_details_pd.isnull().sum()"
-				],
-				"execution_count": 47
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_defaulter_details_pd.nunique()"
-				],
-				"execution_count": 48
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_defaulter_details.printSchema()"
-				],
-				"execution_count": 17
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -444,12 +265,12 @@
 					}
 				},
 				"source": [
-					"# (df_defaulter_details.write\r\n",
-					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					"#  .mode(\"overwrite\")\r\n",
-					"#  .synapsesql(\"LC_DWH.gold.loan_defaulter_dim\", Constants.INTERNAL))"
+					"(df_defaulter_details.write\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					" .mode(\"overwrite\")\r\n",
+					" .synapsesql(\"LC_DWH.gold.loan_defaulter_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 16
+				"execution_count": 8
 			}
 		]
 	}
