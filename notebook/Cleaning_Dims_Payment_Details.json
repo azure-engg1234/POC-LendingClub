@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f2ce9c68-a821-4d31-9d4a-adaf77f76eca"
+				"spark.autotune.trackingId": "b614944a-400a-41bd-b923-d596147d11b2"
 			}
 		},
 		"metadata": {
@@ -50,22 +50,52 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Import the required dependencies"
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
-						"outputs_hidden": true
+						"source_hidden": false,
+						"outputs_hidden": false
 					},
-					"collapsed": false
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
 				},
 				"source": [
-					"# Import the required dependencies\r\n",
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.types import DecimalType\r\n",
 					"from pyspark.sql.window import Window\r\n",
 					"from pyspark.sql.functions import concat, col, lit, row_number, split"
 				],
-				"execution_count": 1
+				"execution_count": 3
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Read from existing internal table"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -81,69 +111,57 @@
 					}
 				},
 				"source": [
-					"# Read from existing internal table\r\n",
 					"df_loan_details = (spark.read\r\n",
 					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.loan_details\")\r\n",
 					"                    )"
 				],
-				"execution_count": 2
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"display(df_loan_details.limit(5))"
-				],
-				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_loan_details = df_loan_details.withColumn(\"transaction_id\",row_number() \\\r\n",
-					"# .over( Window.orderBy(\"id\")))"
-				],
-				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_loan_details = df_loan_details.withColumn('transaction_id', split(df_loan_details['member_id'], 'I').getItem(1))"
-				],
 				"execution_count": 4
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Creating Transaction Id as surrogated key"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_loan_details = df_loan_details.withColumn('transaction_id', split(df_loan_details['member_id'], 'I').getItem(1))\r\n",
+					"df_loan_details = df_loan_details.withColumn(\"transaction_id\", concat(lit(\"TRANS\"), col(\"transaction_id\")))"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Selecting Required column"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -162,7 +180,41 @@
 					"df_payment_details = df_loan_details.select(\"transaction_id\",\"member_id\",\"funded_amnt_inv\",\"installment\",\r\n",
 					"\"total_pymnt\",\"last_pymnt_d\", \"last_pymnt_amnt\", \"next_pymnt_d\",\"disbursement_method\")"
 				],
-				"execution_count": 5
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Type Casting: Converting Datatypes of Columns"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_payment_details = df_payment_details.withColumn(\"funded_amnt_inv\",df_payment_details.funded_amnt_inv.cast('int'))\r\n",
+					"df_payment_details = df_payment_details.withColumn(\"installment\",df_payment_details.installment.cast(DecimalType(18,2)))\r\n",
+					"df_payment_details = df_payment_details.withColumn(\"total_pymnt\",df_payment_details.total_pymnt.cast(DecimalType(18,2)))\r\n",
+					"df_payment_details = df_payment_details.withColumn(\"last_pymnt_amnt\",df_payment_details.last_pymnt_amnt.cast(DecimalType(18,2)))"
+				],
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -179,215 +231,9 @@
 					"collapsed": false
 				},
 				"source": [
-					"display(df_payment_details.limit(10))"
-				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_payment_details = df_payment_details.withColumn(\"transaction_id\", concat(lit(\"TRANS\"), col(\"transaction_id\")))"
-				],
-				"execution_count": 6
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"## Casting: Changing the datatype of the columns"
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_payment_details = df_payment_details.withColumn(\"funded_amnt_inv\",df_payment_details.funded_amnt_inv.cast('int'))"
-				],
-				"execution_count": 7
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_payment_details = df_payment_details.withColumn(\"installment\",df_payment_details.installment.cast(DecimalType(18,2)))"
+					"display(df_payment_details)"
 				],
 				"execution_count": 8
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_payment_details = df_payment_details.withColumn(\"total_pymnt\",df_payment_details.total_pymnt.cast(DecimalType(18,2)))"
-				],
-				"execution_count": 9
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_payment_details = df_payment_details.withColumn(\"last_pymnt_amnt\",df_payment_details.last_pymnt_amnt.cast(DecimalType(18,2)))"
-				],
-				"execution_count": 10
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"## Dataset Analysis"
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_payment_details_pd = df_payment_details.toPandas()"
-				],
-				"execution_count": 18
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_payment_details_pd.describe()"
-				],
-				"execution_count": 19
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_payment_details_pd.isnull().sum()"
-				],
-				"execution_count": 20
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_payment_details_pd.nunique()"
-				],
-				"execution_count": 21
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_payment_details.printSchema()"
-				],
-				"execution_count": 23
 			},
 			{
 				"cell_type": "markdown",
@@ -416,12 +262,12 @@
 					}
 				},
 				"source": [
-					"# (df_payment_details.write\r\n",
-					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					"#  .mode(\"overwrite\")\r\n",
-					"#  .synapsesql(\"LC_DWH.gold.payment_details_dim\", Constants.INTERNAL))"
+					"(df_payment_details.write\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					" .mode(\"overwrite\")\r\n",
+					" .synapsesql(\"LC_DWH.gold.payment_details_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 12
+				"execution_count": 9
 			}
 		]
 	}
