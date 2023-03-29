@@ -24,6 +24,9 @@
 			"transformations": [
 				{
 					"name": "AddingDateColumn"
+				},
+				{
+					"name": "AlterRow1"
 				}
 			],
 			"scriptLines": [
@@ -31,13 +34,14 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceADLSgen2",
 				"sourceADLSgen2 derive(last_updated_date = currentDate()) ~> AddingDateColumn",
-				"AddingDateColumn sink(allowSchemaDrift: true,",
+				"AddingDateColumn alterRow(upsertIf(1 == 1)) ~> AlterRow1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
-				"     insertable:true,",
+				"     insertable:false,",
 				"     updateable:false,",
-				"     upsertable:false,",
-				"     recreate:true,",
+				"     upsertable:true,",
+				"     keys:['last_updated_date'],",
 				"     format: 'table',",
 				"     staged: true,",
 				"     allowCopyCommand: true,",
