@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4ff230b6-a582-4693-864a-4f5ce05befdd"
+				"spark.autotune.trackingId": "edc0f049-70b6-4662-9b51-53c93533ecdd"
 			}
 		},
 		"metadata": {
@@ -50,19 +50,17 @@
 		},
 		"cells": [
 			{
-				"cell_type": "code",
+				"cell_type": "markdown",
 				"metadata": {
-					"collapsed": false
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
 				},
 				"source": [
-					"# Import the required dependencies\r\n",
-					"import com.microsoft.spark.sqlanalytics\r\n",
-					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
-					"from pyspark.sql.types import DecimalType\r\n",
-					"from pyspark.sql.window import Window\r\n",
-					"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date"
-				],
-				"execution_count": 1
+					"## Import the required dependencies"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -78,13 +76,47 @@
 					}
 				},
 				"source": [
-					"# Read from existing internal table\r\n",
+					"import com.microsoft.spark.sqlanalytics\r\n",
+					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
+					"from pyspark.sql.types import DecimalType\r\n",
+					"from pyspark.sql.window import Window\r\n",
+					"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Read from existing internal table"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
 					"df_customer_data = (spark.read\r\n",
 					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.customer_data\")\r\n",
 					"                    )"
 				],
-				"execution_count": 2
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -97,6 +129,19 @@
 				},
 				"source": [
 					"# Transformation Process and Creation of Customer Dimensional table"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Renaming Column name"
 				]
 			},
 			{
@@ -116,7 +161,7 @@
 					"df_customer_data = df_customer_data.withColumnRenamed(\"mem_id\", \"member_id\").withColumnRenamed(\"fst_name\", \"first_name\")\\\r\n",
 					".withColumnRenamed(\"lst_name\", \"last_name\").withColumnRenamed(\"cust_id\",\"customer_id\")"
 				],
-				"execution_count": 3
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -134,61 +179,6 @@
 				"source": [
 					"df_customer_data = df_customer_data.drop(col(\"last_updated_date\"))"
 				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_customer_data.show(5)"
-				],
-				"execution_count": 12
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_customer_data.printSchema()"
-				],
-				"execution_count": 5
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# Casting the column to change the datatype\r\n",
-					"df_customer_data = df_customer_data.withColumn(\"age\",df_customer_data.age.cast('int'))"
-				],
 				"execution_count": 6
 			},
 			{
@@ -201,7 +191,7 @@
 					}
 				},
 				"source": [
-					"## Dataset Analysis"
+					"## Type Casting the column to change the datatype"
 				]
 			},
 			{
@@ -218,63 +208,28 @@
 					}
 				},
 				"source": [
-					"# customer_data = df_customer_data.toPandas()"
+					"df_customer_data = df_customer_data.withColumn(\"age\",df_customer_data.age.cast('int'))"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# display(df_customer_data)"
 				],
 				"execution_count": 8
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# customer_data.describe()"
-				],
-				"execution_count": 9
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# customer_data.isna().sum()"
-				],
-				"execution_count": 10
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_customer_data.printSchema()"
-				],
-				"execution_count": 11
 			},
 			{
 				"cell_type": "markdown",
@@ -308,7 +263,7 @@
 					" .mode(\"overwrite\")\r\n",
 					" .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 13
+				"execution_count": 9
 			}
 		]
 	}

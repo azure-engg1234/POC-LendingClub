@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "59029840-d773-46a3-933a-e60f24588555"
+				"spark.autotune.trackingId": "8e6c2fa7-4c3b-44cc-8539-bcd676307047"
 			}
 		},
 		"metadata": {
@@ -50,22 +50,52 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Import the required dependencies"
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
-						"outputs_hidden": true
+						"source_hidden": false,
+						"outputs_hidden": false
 					},
-					"collapsed": false
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
 				},
 				"source": [
-					"# Import the required dependencies\r\n",
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.types import DecimalType\r\n",
 					"from pyspark.sql.window import Window\r\n",
 					"from pyspark.sql.functions import concat, col, lit, row_number, split"
 				],
-				"execution_count": 5
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Read from existing internal table"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -81,51 +111,12 @@
 					}
 				},
 				"source": [
-					"# Read from existing internal table\r\n",
 					"df_loan_details = (spark.read\r\n",
 					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.loan_details\")\r\n",
 					"                    )"
 				],
 				"execution_count": 2
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"display(df_loan_details.limit(5))"
-				],
-				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_loan_details = df_loan_details.withColumn(\"defaulter_id\",row_number() \\\r\n",
-					"# .over( Window.orderBy(\"id\")))"
-				],
-				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -453,10 +444,10 @@
 					}
 				},
 				"source": [
-					"(df_defaulter_details.write\r\n",
-					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					" .mode(\"overwrite\")\r\n",
-					" .synapsesql(\"LC_DWH.gold.loan_defaulter_dim\", Constants.INTERNAL))"
+					"# (df_defaulter_details.write\r\n",
+					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					"#  .mode(\"overwrite\")\r\n",
+					"#  .synapsesql(\"LC_DWH.gold.loan_defaulter_dim\", Constants.INTERNAL))"
 				],
 				"execution_count": 16
 			}

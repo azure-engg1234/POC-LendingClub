@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "934d783f-a720-45d3-ba7c-0c1b32693484"
+				"spark.autotune.trackingId": "f5e61e22-b247-4974-843c-699dc000bead"
 			}
 		},
 		"metadata": {
@@ -50,6 +50,19 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Importing the Required Dependencies"
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
@@ -63,14 +76,26 @@
 					}
 				},
 				"source": [
-					"# Import the required dependencies\r\n",
 					"import com.microsoft.spark.sqlanalytics\r\n",
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.window import Window\r\n",
 					"from pyspark.sql.functions import row_number, concat, col, lit, split\r\n",
 					"from pyspark.sql.types import DecimalType"
 				],
-				"execution_count": 1
+				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Read from existing internal table"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -86,40 +111,16 @@
 					}
 				},
 				"source": [
-					"# Read from existing internal table\r\n",
 					"df_account_details = (spark.read\r\n",
 					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
 					"                     .synapsesql(\"LC_DWH.bronze.loan_details\")\r\n",
 					"                    )"
 				],
-				"execution_count": 2
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"# display(df_account_details.limit(5))"
-				],
 				"execution_count": 3
 			},
 			{
-				"cell_type": "code",
+				"cell_type": "markdown",
 				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": true
-					},
 					"nteract": {
 						"transient": {
 							"deleting": false
@@ -127,10 +128,8 @@
 					}
 				},
 				"source": [
-					"# Display columns of the dataframe\r\n",
-					"# (df_account_details.columns)"
-				],
-				"execution_count": 3
+					"## Creating Account Id as surrogated key"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -148,7 +147,7 @@
 				"source": [
 					"df_account_details = df_account_details.withColumn('account_id', split(df_account_details['member_id'], 'I').getItem(1))"
 				],
-				"execution_count": 6
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -164,10 +163,22 @@
 					}
 				},
 				"source": [
-					"# df_account_details_1 = df_account_details.withColumn(\"account_id\",row_number() \\\r\n",
-					"# .over( Window.orderBy(\"id\")))"
+					"df_account_details = df_account_details.withColumn(\"account_id\", concat(lit(\"ACCID\"), col(\"account_id\")))"
 				],
-				"execution_count": 7
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Selecting Required column"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -187,43 +198,41 @@
 					"\"home_ownership\",\"annual_inc\", \"verification_status\",\"total_acc\",\"application_type\",\"annual_inc_joint\",\r\n",
 					"\"verification_status_joint\", \"tot_hi_cred_lim\")"
 				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Type Casting: Converting Datatypes of Columns"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_account_details_filtered = df_account_details_filtered.withColumn(\"tot_hi_cred_lim\",df_account_details_filtered.tot_hi_cred_lim.cast('int'))\r\n",
+					"df_account_details_filtered = df_account_details_filtered.withColumn(\"annual_inc_joint\",df_account_details_filtered.annual_inc_joint.cast('int'))\r\n",
+					"df_account_details_filtered = df_account_details_filtered.withColumn(\"total_acc\",df_account_details_filtered.total_acc.cast('int'))\r\n",
+					"df_account_details_filtered = df_account_details_filtered.withColumn(\"annual_inc\",df_account_details_filtered.annual_inc.cast('int'))"
+				],
 				"execution_count": 7
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_account_details_filtered = df_account_details_filtered.withColumn(\"account_id\", concat(lit(\"ACCID\"), col(\"account_id\")))"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# display(df_account_details_filtered.show(5))"
-				],
-				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -240,114 +249,11 @@
 					"collapsed": false
 				},
 				"source": [
-					"# display(df_account_details_filtered.filter(col(\"annual_inc_joint\").isNotNull()).limit(2))"
-				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"## Casting: converting datatypes of columns"
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_account_details_filtered = df_account_details_filtered.withColumn(\"tot_hi_cred_lim\",df_account_details_filtered.tot_hi_cred_lim.cast('int'))"
-				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_account_details_filtered = df_account_details_filtered.withColumn(\"annual_inc_joint\",df_account_details_filtered.annual_inc_joint.cast('int'))"
+					"# display(df_account_details_filtered)"
 				],
 				"execution_count": 12
 			},
 			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_account_details_filtered = df_account_details_filtered.withColumn(\"total_acc\",df_account_details_filtered.total_acc.cast('int'))"
-				],
-				"execution_count": 13
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df_account_details_filtered = df_account_details_filtered.withColumn(\"annual_inc\",df_account_details_filtered.annual_inc.cast('int'))"
-				],
-				"execution_count": 14
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_loan_details_filtered = df_loan_details_filtered.withColumn(\"installment\",df_loan_details_filtered.installment.cast(DecimalType(18,2)))"
-				],
-				"execution_count": 43
-			},
-			{
 				"cell_type": "markdown",
 				"metadata": {
 					"nteract": {
@@ -357,110 +263,7 @@
 					}
 				},
 				"source": [
-					"## Dataset Analysis"
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# pd_account_details_filtered = df_account_details_filtered.toPandas()"
-				],
-				"execution_count": 21
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# pd_account_details_filtered.describe()"
-				],
-				"execution_count": 22
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# pd_account_details_filtered.isnull().sum()"
-				],
-				"execution_count": 24
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# pd_account_details_filtered.nunique()"
-				],
-				"execution_count": 25
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df_account_details_filtered.printSchema()"
-				],
-				"execution_count": 17
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"## Writing the cleaned and transformed data to gold table"
+					"## Writing the cleaned and transformed data to Gold table"
 				]
 			},
 			{
@@ -482,7 +285,7 @@
 					" .mode(\"overwrite\")\r\n",
 					" .synapsesql(\"LC_DWH.gold.account_details_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 18
+				"execution_count": 8
 			}
 		]
 	}

@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "11fcfeac-1e8e-4d00-922e-17254fb4b925"
+				"spark.autotune.trackingId": "286442bd-0b87-4c91-901e-f0bea5388009"
 			}
 		},
 		"metadata": {
@@ -703,31 +703,6 @@
 					"account_df.createOrReplaceTempView(\"account_details\")"
 				],
 				"execution_count": 68
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# Read from existing internal table\r\n",
-					"df_account_details_dim = (spark.read\r\n",
-					"                     .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					"                     .synapsesql(\"LC_DWH.gold.Account_Details_Dim\")\r\n",
-					"                    )\r\n",
-					"\r\n",
-					"# Show contents of the dataframe\r\n",
-					"# df_account_details_dim.show(5)"
-				],
-				"execution_count": 69
 			},
 			{
 				"cell_type": "markdown",

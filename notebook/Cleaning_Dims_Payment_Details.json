@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2d21d523-9ef8-487c-8d2a-ff57476b6f92"
+				"spark.autotune.trackingId": "f2ce9c68-a821-4d31-9d4a-adaf77f76eca"
 			}
 		},
 		"metadata": {
@@ -416,10 +416,10 @@
 					}
 				},
 				"source": [
-					"(df_payment_details.write\r\n",
-					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					" .mode(\"overwrite\")\r\n",
-					" .synapsesql(\"LC_DWH.gold.payment_details_dim\", Constants.INTERNAL))"
+					"# (df_payment_details.write\r\n",
+					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					"#  .mode(\"overwrite\")\r\n",
+					"#  .synapsesql(\"LC_DWH.gold.payment_details_dim\", Constants.INTERNAL))"
 				],
 				"execution_count": 12
 			}
