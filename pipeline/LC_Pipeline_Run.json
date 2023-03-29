@@ -229,6 +229,76 @@
 					"referenceName": "LS_AzureSqlDB",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "PipelineSuccessRunNotification",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "CleaningTransformationAndLoading",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-36.eastus2.logic.azure.com:443/workflows/c6c7b640571041cab6cd307f925444ff/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_O55o_aQbg_dv_ZjZvlyPDL-2dxFbBGrXMD5FWsP69M",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"value": "{\n    \"Pipeline\": \"@{pipeline().Pipeline}\",\n    \"ErrorMessage\": \"No Error. Pipeline Executed Successfully\",\n    \"DataFactoryName\": \"@{pipeline().DataFactory}\",\n    \"RunID\": \"@{pipeline().RunId}\"\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "PipelineFailedRunNotification",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "CleaningTransformationAndLoading",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-36.eastus2.logic.azure.com:443/workflows/c6c7b640571041cab6cd307f925444ff/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_O55o_aQbg_dv_ZjZvlyPDL-2dxFbBGrXMD5FWsP69M",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"value": "{\n    \"Pipeline\": \"@{pipeline().Pipeline}\",\n    \"ErrorMessage\": \"@{activity('CleaningTransformationAndLoading').Error.Message}\",\n    \"DataFactoryName\": \"@{pipeline().DataFactory}\",\n    \"RunID\": \"@{pipeline().RunId}\"\n}",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"annotations": [],
