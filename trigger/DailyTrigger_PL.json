@@ -1,0 +1,24 @@
+{
+	"name": "DailyTrigger_PL",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "LC_Pipeline_Run",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 24,
+				"startTime": "2023-03-29T22:00:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}
