@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f5e61e22-b247-4974-843c-699dc000bead"
+				"spark.autotune.trackingId": "0e62f2ef-d336-46ce-805b-db93baf0bb89"
 			}
 		},
 		"metadata": {
@@ -82,7 +82,7 @@
 					"from pyspark.sql.functions import row_number, concat, col, lit, split\r\n",
 					"from pyspark.sql.types import DecimalType"
 				],
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -116,7 +116,7 @@
 					"                     .synapsesql(\"LC_DWH.bronze.loan_details\")\r\n",
 					"                    )"
 				],
-				"execution_count": 3
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -147,7 +147,7 @@
 				"source": [
 					"df_account_details = df_account_details.withColumn('account_id', split(df_account_details['member_id'], 'I').getItem(1))"
 				],
-				"execution_count": 4
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -165,7 +165,7 @@
 				"source": [
 					"df_account_details = df_account_details.withColumn(\"account_id\", concat(lit(\"ACCID\"), col(\"account_id\")))"
 				],
-				"execution_count": 5
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -198,7 +198,7 @@
 					"\"home_ownership\",\"annual_inc\", \"verification_status\",\"total_acc\",\"application_type\",\"annual_inc_joint\",\r\n",
 					"\"verification_status_joint\", \"tot_hi_cred_lim\")"
 				],
-				"execution_count": 6
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -232,7 +232,7 @@
 					"df_account_details_filtered = df_account_details_filtered.withColumn(\"total_acc\",df_account_details_filtered.total_acc.cast('int'))\r\n",
 					"df_account_details_filtered = df_account_details_filtered.withColumn(\"annual_inc\",df_account_details_filtered.annual_inc.cast('int'))"
 				],
-				"execution_count": 7
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -249,9 +249,9 @@
 					"collapsed": false
 				},
 				"source": [
-					"# display(df_account_details_filtered)"
+					"display(df_account_details_filtered)"
 				],
-				"execution_count": 12
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -280,12 +280,12 @@
 					}
 				},
 				"source": [
-					"(df_account_details_filtered.write\r\n",
-					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					" .mode(\"overwrite\")\r\n",
-					" .synapsesql(\"LC_DWH.gold.account_details_dim\", Constants.INTERNAL))"
+					"# (df_account_details_filtered.write\r\n",
+					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					"#  .mode(\"overwrite\")\r\n",
+					"#  .synapsesql(\"LC_DWH.gold.account_details_dim\", Constants.INTERNAL))"
 				],
-				"execution_count": 8
+				"execution_count": null
 			}
 		]
 	}
