@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "bfca097d-6a70-4a3f-8b1a-eec1f2e48403"
+				"spark.autotune.trackingId": "03fbf60e-d4ed-4910-af8a-36cb4e477c30"
 			}
 		},
 		"metadata": {
@@ -410,6 +410,19 @@
 				"execution_count": 69
 			},
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Null Validation"
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
@@ -420,13 +433,13 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"collapsed": false
+					}
 				},
 				"source": [
-					"display(df_fact_final)"
+					"df_payment_details.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_payment_details.columns]\r\n",
+					"   ).show()"
 				],
-				"execution_count": 70
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",

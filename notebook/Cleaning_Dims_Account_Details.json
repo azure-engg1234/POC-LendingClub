@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0e62f2ef-d336-46ce-805b-db93baf0bb89"
+				"spark.autotune.trackingId": "d27e4810-657e-4e42-9ddb-c9ccf0fccc12"
 			}
 		},
 		"metadata": {
@@ -128,7 +128,7 @@
 					}
 				},
 				"source": [
-					"## Creating Account Id as surrogated key"
+					"## Creating Account Id as surrogate key"
 				]
 			},
 			{
@@ -235,6 +235,19 @@
 				"execution_count": null
 			},
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Cleaning emp_length column "
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
@@ -245,11 +258,136 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"collapsed": false
+					}
 				},
 				"source": [
-					"display(df_account_details_filtered)"
+					"df_account_details_filtered=df_account_details_filtered.withColumn(\"emp_length\", when(col(\"emp_length\")== lit(\"n/a\"),lit(\"null\")).otherwise(col(\"emp_length\"))  )"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_account_details_filtered=df_account_details_filtered.withColumn(\"emp_length\", when(col(\"emp_length\")== lit(\"< 1 year\"),lit(\"1\")).otherwise(col(\"emp_length\"))  )"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_account_details_filtered=df_account_details_filtered.withColumn(\"emp_length\", when(col(\"emp_length\")== lit(\"10+ years\"),lit(\"10\")).otherwise(col(\"emp_length\"))  )"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"string_to_remove=\"years\"\r\n",
+					"# Use the regexp_replace function to remove the string from the column\r\n",
+					"df_account_details_filtered = df_account_details_filtered.withColumn(\"emp_length\", regexp_replace(replace_value_10yr[\"emp_length\"], string_to_remove, \"\"))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"string_to_remove=\"year\"\r\n",
+					"# Use the regexp_replace function to remove the string from the column\r\n",
+					"df_account_details_filtered= df_account_details_filtered.withColumn(\"emp_length\", regexp_replace(replace_value_years[\"emp_length\"], string_to_remove, \"\"))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Null Validation"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_account_details_filtered.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_account_details_filtered.columns]\r\n",
+					"   ).show()"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
 				],
 				"execution_count": null
 			},
@@ -280,10 +418,10 @@
 					}
 				},
 				"source": [
-					"# (df_account_details_filtered.write\r\n",
-					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					"#  .mode(\"overwrite\")\r\n",
-					"#  .synapsesql(\"LC_DWH.gold.account_details_dim\", Constants.INTERNAL))"
+					"(df_account_details_filtered.write\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					" .mode(\"overwrite\")\r\n",
+					" .synapsesql(\"LC_DWH.gold.account_details_dim\", Constants.INTERNAL))"
 				],
 				"execution_count": null
 			}

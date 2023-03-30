@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8d3bb568-e078-4b24-828c-81b0e8e47f5e"
+				"spark.autotune.trackingId": "5dad11a9-ceae-4d18-9d7c-7baf1a4585ec"
 			}
 		},
 		"metadata": {
@@ -235,6 +235,38 @@
 					"display(df_loan_details_filtered)"
 				],
 				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Null Validation"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_loan_details_filtered.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_loan_details_filtered.columns]\r\n",
+					"   ).show()"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",

@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "dc698269-20bd-45d9-8f7c-847ad0c569a8"
+				"spark.autotune.trackingId": "2f2327bb-b7f9-4c15-9aea-30949864208d"
 			}
 		},
 		"metadata": {
@@ -220,6 +220,19 @@
 				"execution_count": 6
 			},
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Null Validation"
+				]
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
@@ -230,13 +243,31 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"collapsed": false
+					}
 				},
 				"source": [
-					"display(df_defaulter_details)"
+					"df_defaulter_details.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_defaulter_details.columns]\r\n",
+					"   ).show()"
 				],
-				"execution_count": 7
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_defaulter_details=df_defaulter_details.replace(\"null\",None)"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",

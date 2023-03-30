@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "608d9c04-36b0-4259-b04d-4a6af63d262c"
+				"spark.autotune.trackingId": "e4c0d024-04c5-418b-9020-7952b1cc2ec5"
 			}
 		},
 		"metadata": {
@@ -241,6 +241,38 @@
 					}
 				},
 				"source": [
+					"## Null Validation"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_investor_data.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_investor_data.columns]\r\n",
+					"   ).show()"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
 					"## Writing the cleaned and transformed data to gold table"
 				]
 			},
@@ -258,10 +290,10 @@
 					}
 				},
 				"source": [
-					"# (df_investor_data.write\r\n",
-					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					"#  .mode(\"overwrite\")\r\n",
-					"#  .synapsesql(\"LC_DWH.gold.investor_dim\", Constants.INTERNAL))"
+					"(df_investor_data.write\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					" .mode(\"overwrite\")\r\n",
+					" .synapsesql(\"LC_DWH.gold.investor_dim\", Constants.INTERNAL))"
 				],
 				"execution_count": 7
 			}

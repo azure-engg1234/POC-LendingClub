@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d871f69c-acbe-4098-806a-972adc1cf0b0"
+				"spark.autotune.trackingId": "47ec747a-fabd-4d26-897e-21cbd8602b98"
 			}
 		},
 		"metadata": {
@@ -80,9 +80,9 @@
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					"from pyspark.sql.types import DecimalType\r\n",
 					"from pyspark.sql.window import Window\r\n",
-					"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date"
+					"from pyspark.sql.functions import concat, col, lit, row_number, split,substring,regexp_replace, to_date, count, when, isnan"
 				],
-				"execution_count": 1
+				"execution_count": 22
 			},
 			{
 				"cell_type": "markdown",
@@ -213,6 +213,38 @@
 				"execution_count": 5
 			},
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Null Validation"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df_customer_data.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_customer_data.columns]\r\n",
+					"   ).show()"
+				],
+				"execution_count": 23
+			},
+			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
@@ -258,10 +290,10 @@
 					}
 				},
 				"source": [
-					"# (df_customer_data.write\r\n",
-					"#  .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
-					"#  .mode(\"overwrite\")\r\n",
-					"#  .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
+					"(df_customer_data.write\r\n",
+					" .option(Constants.TEMP_FOLDER, \"abfss://temp-staging@salendingclub.dfs.core.windows.net/temporary-staging\")\r\n",
+					" .mode(\"overwrite\")\r\n",
+					" .synapsesql(\"LC_DWH.gold.customer_dim\", Constants.INTERNAL))"
 				],
 				"execution_count": 7
 			}
