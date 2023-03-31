@@ -52,7 +52,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "Pipeline 1",
+						"referenceName": "PL_TransformationNBs",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
